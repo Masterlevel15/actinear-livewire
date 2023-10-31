@@ -6,8 +6,9 @@
         <!-- Bandelette transparente -->
         <div class="absolute top-0 left-0 w-full h-12 bg-black bg-opacity-50 flex items-center justify-between px-[1.8vh] py-[4vh]">
             <!-- Icône flèche à gauche -->
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"></path></svg>
-
+            <button onclick="goBack()">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"></path></svg>
+            </button>
             <!-- Icônes dans des bulles blanches à droite -->
             <div class="flex space-x-[2vh] pr-2">
                 <!-- Icône Bookmark -->
@@ -82,7 +83,7 @@
             <p class="text-sm text-white">Organisé par</p>
             
             <!-- Bulle avec le profil de l'organisateur -->
-            <div class="my-3 w-14 h-14 inline-block bg-white rounded-full">
+            <div class="my-3 ml-2 w-14 h-14 inline-block bg-white rounded-full">
                 <img src="https://fastly.picsum.photos/id/238/450/200.jpg?hmac=vy5OV4OwcfPBsjgLtZks97bfoIEBProUzHqGcLgmz5E" alt="Organisateur" class="w-full h-full rounded-full object-cover">
             </div>
             
@@ -91,11 +92,21 @@
             
             <!-- Étoiles d'évaluation -->
             <div class="">
-                <span class="text-yellow-300 text-sm">★</span>
-                <span class="text-yellow-300 text-sm">★</span>
-                <span class="text-yellow-300 text-sm">★</span>
-                <span class="text-yellow-300 text-sm">★</span>
-                <span class="text-white text-sm">★</span>
+                @php
+                    $averageRating = $selectedActivity->promoter->averageRating() ?? 0;
+                @endphp
+
+                @for ($i = 1; $i <= 5; $i++)
+                    @if ($i <= $averageRating)
+                        <i class="fa-solid fa-star text-yellow-400"></i>
+                    @else
+                        <i class="fa-solid fa-star text-slate-50"></i>
+                    @endif
+                @endfor
+            </div>
+
+            <div class="mt-8 mb-12 ">
+                <a href="{{ route('promoter-profile', $selectedActivity->promoter->id) }}" class="bg-green px-4 py-2 rounded-3xl text-white font-bold w-48 shadow-lg block text-center">Noter l'organisateur</a>
             </div>
         </div>
 
@@ -132,6 +143,9 @@
 </div>
 
 <script>
+    function goBack() {
+        window.history.back();
+    }
     console.log(document.getElementById('map').dataset.latitude);
     
 

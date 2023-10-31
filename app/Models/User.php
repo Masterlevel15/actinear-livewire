@@ -64,6 +64,11 @@ class User extends Authenticatable
         return $this->belongsToMany(\App\Models\Activity::class, 'users_has_activities');
     }
     */
+    //activités du promoter
+    public function organizedActivities()
+    {
+        return $this->hasMany(Activity::class, 'promoter_id');
+    }
 
     //Bookmark
     public function bookmarkedActivities()
@@ -75,6 +80,28 @@ class User extends Authenticatable
     public function registeredActivities()
     {
         return $this->belongsToMany(Activity::class);
+    }
+
+    // Note donnée par l'utilisateur
+    public function givenRatings()
+    {
+    return $this->belongsToMany(User::class, 'ratings', 'user_id', 'promoter_id')
+                ->withPivot('rating')
+                ->withTimestamps();
+    }
+
+    // Note reçue par l'organisateur
+    public function receivedRatings()
+    {
+        return $this->belongsToMany(User::class, 'ratings', 'promoter_id', 'user_id')
+                    ->withPivot('rating')
+                    ->withTimestamps();
+    }
+
+    //note moyenne de l'organisateur (promoter)
+    public function averageRating()
+    {
+        return $this->receivedRatings()->avg('rating'); // En supposant que vous avez une relation `receivedRatings` pour les notations reçues par cet utilisateur.
     }
 
 }

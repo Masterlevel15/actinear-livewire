@@ -22,7 +22,7 @@ class Activity extends Model
     }
     //organisateur
     public function promoter() {
-        return $this->belongsTo(\App\Models\User::class);
+        return $this->belongsTo(\App\Models\User::class, 'promoter_id');
     }
     /*
     public function users() {

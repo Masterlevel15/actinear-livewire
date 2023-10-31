@@ -3,12 +3,14 @@
   <div class="flex space-x-4 pt-4" style="min-width: 50vh;">
     <!-- Catégorie 1 -->
     @foreach($categories as $category)
-    <div class="flex flex-col items-center ">
-      <div class="relative w-[9vh] h-[9vh] rounded-full overflow-hidden">
-        <img src="https://picsum.photos/id/238/450/200" alt="Catégorie 1" class="w-full h-full object-cover">
+    <a href="{{ route('activities-by-category', ['categoryId' => $category->id ]) }}">
+      <div class="flex flex-col items-center ">
+        <div class="relative w-[9vh] h-[9vh] rounded-full overflow-hidden">
+          <img src="https://picsum.photos/id/238/450/200" alt="Catégorie 1" class="w-full h-full object-cover">
+        </div>
+        <p class="text-center text-white mt-2">{{$category->name}}</p>
       </div>
-      <p class="text-center text-white mt-2">{{$category->name}}</p>
-    </div>
+    </a>
     @endforeach
     <!-- Répétez cette structure pour chaque catégorie -->
 

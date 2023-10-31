@@ -11,6 +11,7 @@ class ActivityComponent extends Component
     public $lat;
     public $long, $distance;
     public $sortedActivities = [];
+    public $activities;
 
     private function radians(float $degrees): float
     {   
@@ -32,8 +33,7 @@ class ActivityComponent extends Component
             $distance = 150;
         }
 
-        $activities = Activity::with('promoter', 'category', 'country', 'city')->whereYear('date', '>=', 2023)
-        ->get();
+        $activities = $this->activities;
         
         $activitiesSortByRange = [];
         foreach($activities as $activity) {
@@ -64,6 +64,9 @@ class ActivityComponent extends Component
     {
             $this->lat = $latitude;
             $this->long = $longitude;
+
+            $this->activities = Activity::with('promoter', 'category', 'country', 'city')->whereYear('date', '>=', 2023)
+            ->get();
             
             $this->sortActivitiesWithDistances(floatval($latitude), floatval($longitude));
         

@@ -7,7 +7,10 @@ use App\Livewire\MyLivewireComponent;
 use App\Livewire\Homepage;
 use App\Livewire\GeoLocationComponent;
 use App\Livewire\ActivityDetails;
+use App\Livewire\ActivitiesByCategory;
+use App\Livewire\ActivitiesList;
 use App\Livewire\MapComponent;
+use App\Livewire\PromoterProfile;
 
 
 /*
@@ -21,14 +24,18 @@ use App\Livewire\MapComponent;
 |
 */
 
-Route::get('/', Homepage::class);
+Route::get('/', Homepage::class)->name('homepage');
 
 Route::get('/test', MyLivewireComponent::class);
 
 
 Route::get('/counter', Counter::class);
 
+Route::get('/activities/category/{categoryId}', ActivitiesByCategory::class)->name('activities-by-category');
+
 Route::get('/activity-details/{id}', ActivityDetails::class)->name('activity-details');
+
+Route::get('/promoter-profile/{promoterId}', PromoterProfile::class)->name('promoter-profile');
 
 Route::get('/map', MapComponent::class)->name('map');
 

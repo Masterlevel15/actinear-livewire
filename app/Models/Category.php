@@ -14,6 +14,6 @@ class Category extends Model
     }
 
     public function activities() {
-        return $this->hasToMany(\App\Models\Activity::class);
+        return $this->hasMany(\App\Models\Activity::class);
     }
 }
