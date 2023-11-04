@@ -11,6 +11,8 @@ use App\Livewire\ActivitiesByCategory;
 use App\Livewire\ActivitiesList;
 use App\Livewire\MapComponent;
 use App\Livewire\PromoterProfile;
+use App\Livewire\FilterComponent;
+use App\Livewire\TestComponent;
 
 
 /*
@@ -26,10 +28,11 @@ use App\Livewire\PromoterProfile;
 
 Route::get('/', Homepage::class)->name('homepage');
 
-Route::get('/test', MyLivewireComponent::class);
-
+Route::get('/test', TestComponent::class);
 
 Route::get('/counter', Counter::class);
+
+Route::get('/filter', FilterComponent::class)->name('filter');
 
 Route::get('/activities/category/{categoryId}', ActivitiesByCategory::class)->name('activities-by-category');
 

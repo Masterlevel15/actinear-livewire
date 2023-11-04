@@ -11,7 +11,7 @@ class CategoryComponent extends Component
 
     public function getCategories(){
         $this->categories = Category::all();
-       return $this->categories;
+        return $this->categories;
     }
     public function mount(){
         $this->getCategories();
