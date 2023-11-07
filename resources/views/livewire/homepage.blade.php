@@ -32,8 +32,8 @@
     <!-- FIN Authentification -->
     
     <!-- En-tête avec titre de l'application -->
-    <h1 class="text-4xl font-bold text-left my-[6.5vh]  text-white pl-[3.75vh]">Actinear</h1>
-    <div class="flex items-center justify-between pr-[4.5vh] text-white pl-[3.75vh] pb-[3vh]">
+    <h1 class="text-4xl font-bold text-left my-[6.5vh]  text-slate-50 pl-[3.75vh]">Actinear</h1>
+    <div class="flex items-center justify-between pr-[4.5vh] text-slate-50 pl-[3.75vh] pb-[3vh]">
         <livewire:search-bar-component2/>
         <!-- Icône filtre -->
         <a href="{{ route('filter', ['categories']) }}">

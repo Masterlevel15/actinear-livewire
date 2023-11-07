@@ -35,6 +35,7 @@
             <!-- Page Content -->
             <main>
                 {{ $slot }}
+                @livewire('navigation-bar-component')
             </main>
         </div>
 

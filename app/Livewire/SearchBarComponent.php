@@ -2,12 +2,15 @@
 
 namespace App\Livewire;
 
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 
 class SearchBarComponent extends Component
 {
-    public $searchQuery, $suggestions, $results, $table;
+    public  $suggestions, $results, $table;
+    #[Url] 
+    public $searchQuery;
     public function mount()
     {
     }
@@ -27,6 +30,7 @@ class SearchBarComponent extends Component
         $suggestion = json_decode($selectedSuggestion, true);
         $this->searchQuery = $suggestion['name'];
         $this->suggestions = [];
+        $this->dispatch('search-query');
     }
     public function render()
     {

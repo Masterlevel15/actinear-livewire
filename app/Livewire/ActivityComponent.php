@@ -4,14 +4,17 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Activity;
+use Illuminate\Support\Facades\Session;
 
 class ActivityComponent extends Component
 {
     #[Reactive] 
-    public $lat;
-    public $long, $distance;
+    public $latitude;
+    public $longitude, $distance;
     public $sortedActivities = [];
     public $activities;
+    public $sortedActivitiesByDate, $sortedActivitiesByDistance, $sortedActivitiesByFilter;
+    public $isByDistance = true, $isByDate = true, $isByFilter = false;
 
     private function radians(float $degrees): float
     {   
@@ -60,21 +63,64 @@ class ActivityComponent extends Component
     {
         return  $this->sortedActivities; 
     }
-    public function mount($latitude,    $longitude)
+    public function sortActivitiesByDate()
     {
-            $this->lat = $latitude;
-            $this->long = $longitude;
+       $this->sortedActivitiesByDate = Activity::with('promoter', 'category', 'country', 'city')->whereYear('date', '>=', 2023)->orderBy('date', 'desc')
+        ->get();  
+    }
+    public function mount()
+    {
+            
 
             $this->activities = Activity::with('promoter', 'category', 'country', 'city')->whereYear('date', '>=', 2023)
             ->get();
-            
-            $this->sortActivitiesWithDistances(floatval($latitude), floatval($longitude));
+
+        
+
+     
+            if(!Session::has('filter-active'))
+            {
+
+                $this->sortActivitiesWithDistances(floatval($this->latitude ), floatval($this->longitude));
+                $this->sortActivitiesByDate();
+            }
+            if(Session::has('filter-active')){
+                if(Session::has('setting-distance'))
+                {
+                    $this->sortedActivities = Session::get('setting-distance');
+                    $this->isByDistance = true;
+                    $this->isByDate = false;
+                    $this->isByFilter = false;
+                }
+
+                //dd(Session::get('setting-distance'), Session::get('setting-date'));
+                
+                if(Session::has('setting-date'))
+                {
+                    $this->sortedActivitiesByDate = Session::get('setting-date');
+                    $this->isByDate = true;
+                    $this->isByDistance = false;
+                    $this->isByFilter = false;
+                }
+                if(Session::has('filter') && !Session::has('setting-date') && !Session::has('setting-distance'))
+                {
+                    $this->sortedActivitiesByFilter = Session::get('filter');
+                    
+                    $this->isByFilter = true;
+                    $this->isByDistance = false;
+                    $this->isByDate = false;
+                }
+                
+                if(Session::has('setting-distance') && Session::has('setting-date'))
+                {
+                    $this->isByDistance = true;
+                    $this->isByDate = true;
+                }
+            }
         
     }
     public function render()
     {
-        return view('livewire.activity-component')->with([
-            'DiseaseDiagnosed' => json_encode($this->sortedActivities),
-        ]);
+        return view('livewire.activity-component');
     }
 }

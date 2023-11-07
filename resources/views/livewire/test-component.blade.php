@@ -66,3 +66,5 @@
             
             <!--
             <livewire:toggle-button :content="'Date croissante'" :class="'py-3 px-4 rounded-lg text-xs'" :toggleButtonId="'jdbkbd'" wire:key="stableKey"/>-->
+           
+            <livewire:search-bar-component  :table="'City'"/>

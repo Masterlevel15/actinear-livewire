@@ -23,7 +23,7 @@
         <!-- Titre et rectangle blanc en bas à gauche de l'image -->
         <div class="absolute bottom-4 left-7">
             <!-- Titre en blanc -->
-            <h1 class="text-white text-lg font-bold">Randonnée charmante au bord d...</h1>
+            <h1 class="text-white text-lg font-bold">{{$selectedActivity->title}}</h1>
             
             <!-- Rectangle blanc avec icône et texte -->
             <div class="mt-2 bg-white px-2 py-[0.8vh] rounded-lg flex items-center space-x-2 w-36">
@@ -42,13 +42,13 @@
 
         <!-- Catégorie dans un rectangle arrondi blanc du côté droit -->
         <div class="bg-white px-2 py-1 text-sm rounded-[1.5vh] mr-4">
-            <span class="text-[#006666]">Randonnée</span>
+            <span class="text-[#006666]">{{$selectedActivity->category->name}}</span>
         </div>
     </div>
 
     <div class="px-4 mt-16">
     <!-- Titre en blanc avec une taille de police plus grande -->
-    <h2 class="text-white text-2xl font-bold">Titre ici</h2>
+    <h2 class="text-white text-2xl font-bold">{{$selectedActivity->title}}</h2>
 
     <!-- Espacement vertical important -->
     <div class="mt-6">
@@ -59,6 +59,7 @@
         <div class="mt-4">
             <!-- Paragraphe avec une taille de police plus grande que la date -->
             <p class="text-white text-lg">
+                {{$selectedActivity->description}}
                 Cette randonnée vous fera perdre la tête! De cours d'eau enchanteurs aux sommets ravissants, vous serez revigorés par cette balade d'un charme authentique.
             </p>
         </div>
@@ -69,7 +70,7 @@
         <!-- Icône d'adresse -->
         <i class="fa-solid fa-location-dot mr-2 text-4xl text-green"></i>
         <!-- Adresse -->
-        <p class="text-white text-sm">Avenue de la Libération, 17, 8731 Beau Village</p>
+        <p class="text-white text-sm">{{$selectedActivity->address}}, 17, {{$selectedActivity->city->zip_code}} {{$selectedActivity->city->name}}</p>
     </div>
      <!-- Carte -->
     <div id="map" class="mt-8 border rounded-lg h-48 bg-white" data-latitude="{{$selectedActivity->latitude}}" data-longitude="{{$selectedActivity->longitude}}">
@@ -88,7 +89,7 @@
             </div>
             
             <!-- Nom de l'organisateur -->
-            <p class="text-md text-white">Nom de l'organisateur</p>
+            <p class="text-md text-white">{{$selectedActivity->promoter->name}}</p>
             
             <!-- Étoiles d'évaluation -->
             <div class="">
@@ -112,7 +113,7 @@
 
         <!-- Section des participants -->
         <div class="mt-12 mb-4">
-            <p class="text-white text-sm mb-2">158/50 participants</p>
+            <p class="text-white text-sm mb-2">158/{{$selectedActivity->participants_number}} participants</p>
             
             <!-- Bulles avec les photos des utilisateurs -->
             <div class="flex space-x-2 overflow-x-auto">

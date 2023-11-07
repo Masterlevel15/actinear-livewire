@@ -128,8 +128,6 @@ class GeoLocationComponent extends Component
 
     public function mount()
     {
-        $this->latitude;
-        $this->longitude;
         //$this->updateAdress();
     }
 

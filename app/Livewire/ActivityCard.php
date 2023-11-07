@@ -6,10 +6,11 @@ use Livewire\Component;
 
 class ActivityCard extends Component
 {
-    public $activity;
-    public function mount($activity)
+    public $activity, $activities;
+
+    public function mount()
     {
-        $this->activity = $activity;
+        //$this->activity = $activity;
     }
     public function render()
     {

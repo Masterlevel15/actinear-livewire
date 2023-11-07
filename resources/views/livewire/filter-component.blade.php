@@ -6,18 +6,32 @@
             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"></path></svg>
         </button>
             <!-- Icônes dans des bulles blanches à droite -->
-                <!-- Icône ReInit-->
-                <div class=" w-[5vh] h-[5vh] bg-white p-2 rounded-full flex items-center justify-center mr-4">
-                    <i class="fa-solid fa-xmark"></i>
-                </div>
+            <!-- Icône ReInit-->
+            <div class=" w-[5vh] h-[5vh] bg-white p-2 rounded-full flex items-center justify-center mr-4">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
     </div>
     <!--SearchBar-->
-    <livewire:search-bar-component  :table="'City'"/>
+    <!-- Champ de recherche -->
+    <div class="bg-[#CEE6E7] p-0 rounded-[1.5vh] flex items-center relative">
+        <input type="text" placeholder="Rechercher par localité"
+            id="searchBar" class="bg-transparent border-none focus:outline-none flex-grow ml-2" wire:model="searchQuery" wire:keydown="searchResult">
+            
+            @if (collect($suggestions)->isNotEmpty())
+            <ul class="absolute bg-white border border-gray-300 rounded-lg mt-2 left-0 right-0 z-10" style="top: 2rem;" id="suggestions"> <!-- Ajustez la valeur '2.5rem' en fonction de la hauteur de votre input -->
+                @foreach ($suggestions as $suggestion)
+                
+                    <li class="p-2 hover:bg-gray-100 text-black" wire:click="selectSuggestion('{{ json_encode($suggestion)  }}')">{{ $suggestion->name }}</li>
+                @endforeach
+            </ul>
+
+            @endif
+    </div>
     <!--slider  -->
     <div wire:key="stableKey">
-        <livewire:range-slider wire:model="sliderValue" />
+        <livewire:range-slider  />
     </div>
-    <div>Distance choisie: {{ $sliderValue }} km</div>
+    <div>Distance choisie: {{ $title }} km</div>
     <!--séparation-->
     <hr class="h-[0.05vh] my-8 bg-[#E5E7EB] border-0 dark:bg-gray-300">
     <!-- Tri par distance et par date -->
@@ -29,7 +43,7 @@
                         <span class="text-sm font-semibold">{{$setting['title']}}</span>
                     </div>
                     <button 
-                    wire:click.stop="toggleSetting({{ $setting['id']}})"
+                    wire:click.stop="toggleSetting({{ $setting['id'] }})"
                     class="{{ $setting['active'] ? 'bg-blue-light text-white font-semibold' : 'bg-[#CEE6E7] text-slate-800' }} py-3 px-4 rounded-lg text-xs border border-blue-light">
                     {{$setting['name']}}
                     </button>
@@ -66,7 +80,7 @@
         <button class="w-full text-white hover:bg-blue-light focus:ring-4 focus:outline-none focus:ring-blue-300
     font-medium rounded-lg text-sm px-4 py-2 bg-blue-light
     focus:text-blue-light focus:bg-blue-light2 
-    focus:ring-blue-light">Search</button>
+    focus:ring-blue-light" wire:click="sendResult">Search</button>
     </div>
 </div>
 

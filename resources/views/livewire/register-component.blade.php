@@ -1,6 +1,6 @@
 <!-- Section des participants -->
 <div class="mt-12 mb-4">
-    <h2 class="text-white text-lg font-bold">Participants {{ $activity->registeredUsers->count() }} / </h2>
+    <h2 class="text-white text-lg font-bold">Participants {{ $activity->registeredUsers->count() }} / {{$activity->participants_number}} </h2>
     
     <!-- Bulles des avatars des participants -->
     <div class="flex flex-wrap mt-4">
@@ -21,7 +21,7 @@
         <!-- Bouton d'inscription/désinscription -->
         @if($activity->registeredUsers->contains(auth()->id()))
             <button wire:click="toggleRegistration" class="bg-red-500 text-white  px-4 py-2 rounded-3xl">Se désinscrire</button>
-        @elseif($activity->registeredUsers->count() < 1)
+        @elseif($activity->registeredUsers->count() < $activity->participants_number)
             <button wire:click="toggleRegistration" class="bg-green px-4 py-2 rounded-3xl text-white  font-bold w-36 shadow-lg">S'inscrire</button>
         @else
             <button disabled class="bg-gray-500 text-white  px-4 py-2 rounded-3xl cursor-not-allowed">Inscriptions complètes</button>

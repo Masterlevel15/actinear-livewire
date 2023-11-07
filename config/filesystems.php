@@ -36,12 +36,18 @@ return [
             'throw' => false,
         ],
 
-        'public' => [
+        'public_uploads' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'root' => public_path('images'), // Ici, cela définit le répertoire racine pour les opérations de stockage
+            'url' => env('APP_URL').'/images',
             'visibility' => 'public',
-            'throw' => false,
+        ],
+
+        'public_uploads' => [
+            'driver' => 'local',
+            'root' => public_path(''),
+            'url' => env('APP_URL').'',
+            'visibility' => 'public',
         ],
 
         's3' => [

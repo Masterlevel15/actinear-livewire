@@ -1,16 +1,13 @@
 <!-- location-component.blade.php -->
 
 <div>
-    <!-- Titre "Activités à proximité" -->
-    <h2 class="text-2xl font-bold text-left mt-16 mb-8  pl-[3.75vh] text-white">Activités à proximité</h2>
-    @if($latitude && $longitude)
+    @if($latitude && $longitude || Session::has('filter-active'))
     <livewire:activity-component  :latitude="$latitude" :longitude="$longitude"/>
     @else
-    <livewire:loading /> 
+        <livewire:loading /> 
     @endif
     <p>Latitude: {{ $latitude }}</p>
     <p>Longitude: {{ $longitude }}</p>
-    @livewireScripts
 </div>
 
 <!--
@@ -46,7 +43,11 @@
 
 <script>
     document.addEventListener('livewire:initialized', () => {
-        if (navigator.geolocation) {
+        @this.on('filter-apply', (event) => {
+           //
+           console.log(event);
+       });
+        if (navigator.geolocation && !@json(session('filter'))) {
             navigator.geolocation.getCurrentPosition((position) => {
                 @this.dispatch('location-retrieved', { 
                     latitude: position.coords.latitude, 

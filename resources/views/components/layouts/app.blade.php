@@ -16,5 +16,6 @@
     </head>
     <body class="bg-gradient-to-b from-blue-light to-blue-dark">
         {{ $slot }}
+        <livewire:navigation-bar-component />
     </body>
 </html>

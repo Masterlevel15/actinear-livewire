@@ -3,15 +3,25 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\Attributes\On;
+use App\Models\Activity;
 use App\Models\Category;
-use Livewire\Attributes\On; 
 use App\Models\City;
+use Illuminate\Http\Request;
 
 class FilterComponent extends Component
 {
-    public  
+    public
+    $resultsByDate,
+    $resultsByDistance,
+    $searchQuery,
+    $searchQueryResult, 
+    $suggestions, 
+    $results, 
+    $table,
     $categories, 
     $selectedCategories = [], 
+    $selectedSettingsId = [],
     $selectedSettings = [],
     $isActive = false, 
     $cities = [],
@@ -31,10 +41,7 @@ class FilterComponent extends Component
             "active" => false,
         )
     );
-    public function updatePostList($title)
-    {
-        // ...
-    }
+
     public function mount()
     {
         $this->getCities();
@@ -43,18 +50,47 @@ class FilterComponent extends Component
         //$this->classActive = ' $isActive ? \'bg-blue-light text-white font-semibold\' : \'bg-[#CEE6E7] text-slate-800 border border-blue-light\'';
     }
 
+    //SearchBar 
+    public function searchResult()
+    {
+        if ($this->searchQuery !== '' && strlen($this->searchQuery) >= 1) {
+            $this->table = 'City';
+            $modelName = "App\\Models\\" . $this->table;
+
+            $this->suggestions = $modelName::where('name', 'like', $this->searchQuery . '%')->get();
+        } else {
+            $this->suggestions = []; // Réinitialisez les suggestions si la recherche est vide ou courte.
+        }
+    
+    }
+    #[On('slider-value')] 
+    public function getValueFromSlider($distance)
+    {
+        $this->sliderValue = $distance;
+    }
+    public function selectSuggestion($selectedSuggestion)
+    {
+        $suggestion = json_decode($selectedSuggestion, true);
+        $this->searchQuery = $suggestion['name'];
+        $this->searchQueryResult = $suggestion;
+        $this->suggestions = [];
+    }
+    //Fin SearchBar
+
     public function toggleSetting($settingId)
     {
+        $foundKey = array_search($settingId, array_column($this->settings, 'id'));
 
-        dd($this->title);
-        if(in_array($settingId, $this->selectedCategories)) {
+        if(in_array($settingId, $this->selectedSettingsId)) {
             // Si la catégorie est déjà sélectionnée, la désélectionner
-            $this->selectedSettings = array_filter($this->selectedSettings, function($id) use ($settingId) {
+            $this->selectedSettingsId = array_filter($this->selectedSettingsId, function($id) use ($settingId) {
                 return $id !== $settingId;
+                
             });
         } else {
             // Sinon, ajoutez la catégorie à la liste des catégories sélectionnées
-            $this->selectedSettings[] = $settingId;
+            $this->selectedSettingsId[] = $settingId;
+            array_push($this->selectedSettings , $this->settings[$foundKey]);
         }
         // Recherchez l'élément dans $settings et inversez sa valeur 'active'
         foreach ($this->settings as &$setting) {
@@ -64,9 +100,10 @@ class FilterComponent extends Component
         }
      
     }
-    #[On('post-created')] 
+    //#[On('post-created')] 
     public function updateTitle($title)
     {
+        
         $this->title = $title;
     }
     public function toggleCategory($categoryId)
@@ -84,6 +121,70 @@ class FilterComponent extends Component
     public function getCities()
     {
         $this->cities = City::all();
+    }
+    public function applyFilters()
+    {
+        $this->dispatch('filter-apply', true);
+
+        session()->flush();
+        session()->flash('filter-active', true);
+        $query = Activity::query(); // Commencez avec une requête de base
+        
+        // Filtre par ville
+        if ($this->searchQueryResult) {
+            $query->where('city_id', $this->searchQueryResult['id']);
+        }
+
+        // Filtre par distance en utilisant le sliderValue
+        if ($this->sliderValue) {
+            $query->where('distance', '<=' ,$this->sliderValue)->whereYear('date', '>=', 2023)
+            ->get();
+        }
+        
+        // Filtre par catégories
+        if (!empty($this->selectedCategories)) {
+            $query->whereIn('category_id', $this->selectedCategories);
+        }
+
+        // Initialisation des résultats
+        $this->resultsByDate = collect();
+        $this->resultsByDistance = collect();
+
+        session()->flash('filter', $query->get());
+
+        // Clonez la requête d'origine pour le tri par distance
+        $queryForDistance = clone $query;
+
+        // Tri par date
+        if (in_array(2, $this->selectedSettingsId)) {
+            $this->resultsByDate = $query
+                ->with('promoter', 'category', 'country', 'city')
+                ->orderBy('date', 'desc') // Remplacez 'date' par le nom de votre colonne
+                ->get();
+            session()->flash('setting-date', $this->resultsByDate);
+        }
+        // Tri par distance
+        if (in_array(1, $this->selectedSettingsId)) {
+            $this->resultsByDistance = $queryForDistance
+                ->with('promoter', 'category', 'country', 'city')
+                ->orderBy('distance', 'asc') // Remplacez 'distance' par votre colonne de distance réelle
+                ->get();
+            session()->flash('setting-distance', $this->resultsByDistance); 
+        }
+
+        //dd($this->resultsByDistance, $this->resultsByDate);
+        //dd($query->with('promoter', 'category', 'country', 'city')->get());
+        
+        //return $query->get();
+        // Obtenez les résultats finaux
+        
+    }
+    public function sendResult()
+    {
+        $this->applyFilters();
+        //dd($this->searchQuery, $this->selectedSettings, $this->selectedCategories, $this->sliderValue);
+ 
+        $this->redirect('/');
     }
     /*
     public function citiesSuggestion()

@@ -9,6 +9,10 @@ class Activity extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'date' => 'datetime',
+    ];
+
     public function country() {
         return $this->belongsTo(\App\Models\Country::class);
     }

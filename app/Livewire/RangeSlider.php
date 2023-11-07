@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\Attributes\On; 
 
 class RangeSlider extends Component
 {
@@ -11,18 +12,22 @@ class RangeSlider extends Component
     {
         $this->distance = 50;
         $this->sliderValue = $this->distance;
-        $this->handleInputChange();
+        $this->dispatch('slider-value', distance: $this->distance);
+        //$this->handleInputChange();
         
-    }
+    } 
+
     public function handleInputChange()
     {
         $this->distance = intval($this->sliderValue);
-
+        $this->dispatch('slider-value', distance: $this->distance);
+        /*
         $percentage = ceil(($this->sliderValue - 1) / (100 - 1) * 100);
         $notFill = ceil(100 - $percentage);
         $this->sliderStyle = "linear-gradient(to right, #14BA8F ${percentage}%, #d3d3d3 ${notFill}%) !important";
+        */
         
-        $this->dispatch('post-created', title: 'hjvjvhvjhvjhv')->to(FilterComponent::class);
+        //$this->dispatch('post-created', title: 'hjvjvhvjhvjhv')->to(FilterComponent::class);
         //$this->dispatch('sliderValueChanged', distance: $this->distance);
 
     }
