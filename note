@@ -1,0 +1,30 @@
+//Détacher et attacher les catégories en fonction de si elles sont déjà dans la DB
+//detach component pas complet appliqué la même logique mais en comparant mais avec les éléments du formulaire comme tableau de comparaison dans le in_array
+        if($user->categories)
+        {
+            foreach($user->categories as $category)
+            {
+                array_push($this->categoriesId, $category->id);
+            }
+            if($this->selectedCategories)
+            {
+                foreach($this->selectedCategories as $categoryId)
+                {
+                    if(!in_array($categoryId, $this->categoriesId))
+                    {
+                        
+                    }
+                    else
+                    {
+                        $user->categories()->attach($categoryId);
+                    }
+                }
+            }
+        }
+        else
+        {
+            foreach($this->selectedCategories as $categoryId)
+            {
+                $user->categories()->attach($categoryId);
+            }  
+        }

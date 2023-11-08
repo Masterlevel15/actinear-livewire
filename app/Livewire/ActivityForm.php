@@ -22,7 +22,7 @@ class ActivityForm extends Component
 
     public $activity, $categories, $selectedCategory = [], $path;
     public $title, $date, $hour, $term, $participants_number, $address, $description, $distance, $latitude, $longitude, $photo, $country, $city, $promoter, $validate, $zipCode;
-    public $isPhoto = false, $photoIsUploaded = false;
+    public $isPhoto = false, $photoIsUploaded = false, $url;
     public function mount()
     {
         $this->date = now()->format('Y-m-d');
@@ -33,6 +33,15 @@ class ActivityForm extends Component
         if ($this->photo->isValid()) {
             $this->photoIsUploaded = true;
             $this->isPhoto = false;
+                //Stockage de l'image depuis le serveur
+            try {
+                $filename = $this->photo->getClientOriginalName();
+                $this->photo->storeAs('/images', $filename, 'public_uploads');
+                $this->photo = $filename;
+            } catch (\Exception $e) {
+                dd($e->getMessage());
+            }
+            $this->url = asset('images/' . $this->photo);
         }
     }   
     public function fileSet()
@@ -81,6 +90,14 @@ class ActivityForm extends Component
     }
     public function save()
     {
+        $this->validate([
+            'title' => 'required',
+            'date' => 'required',
+            'term' => 'required',
+            'participants_number' => 'required',
+            'address' => 'required',
+            'photo' => 'image|max:1024', // 1MB Max
+        ]);
         /*
         $this->validate([
             'title' => 'required|string|max:255',

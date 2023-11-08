@@ -18,7 +18,7 @@ export default {
                 'blue-lagon': '#EBF4F5',
                 'blue-light': '#7BBFBF',
                 'blue-light2': '#B4D9D9',
-                'blue-light3': '#CEE7E7',
+                'blue-light3': '#CEE6E7',
                 'blue-dark': '#5299BC',
                 'blue-dark2': '#4B8799',
                 'blue-gray': '#4C8798',

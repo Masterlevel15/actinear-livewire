@@ -16,6 +16,7 @@ use App\Livewire\PromoterProfile;
 use App\Livewire\FilterComponent;
 use App\Livewire\TestComponent;
 use App\Livewire\FileUploadComponent;
+use App\Livewire\PromoterEdit;
 
 
 /*
@@ -53,6 +54,9 @@ Route::get('/activity/create', ActivityForm::class)->name('activity-create');
 
 //Profil organisateur
 Route::get('/promoter-profile/{promoterId}', PromoterProfile::class)->name('promoter-profile');
+
+//Editer Profil organisateur
+Route::get('/promoter-profile/{promoterId}/edit', PromoterEdit::class)->name('promoter-profile-edit');
 
 //Carte
 Route::get('/map', MapComponent::class)->name('map');

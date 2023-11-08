@@ -14,12 +14,15 @@
     <!-- Image Card -->
     <form wire:submit="save">
     <div class="shadow-lg rounded-lg overflow-hidden mt-24 w-auto">
-        <template x-if="imageUrl">
-            <img :src="imageUrl" alt="Prévisualisation de l'image" class="w-full">
-        </template>
-        <template x-if="!imageUrl">
-            <img src="https://fastly.picsum.photos/id/238/450/200.jpg?hmac=vy5OV4OwcfPBsjgLtZks97bfoIEBProUzHqGcLgmz5E" alt="Randonnée" class="" />
-        </template>
+        @if(!$photoIsUploaded && $isPhoto) 
+        <div class="{{ !$photoIsUploaded && !$isPhoto ? 'hidden' : ''}} mb-16 mx-auto text-center pt-24">
+            <i class="fa fa-spinner fa-spin fa-2xl"></i>
+        </div>
+        @elseif($photoIsUploaded )
+        <img id="output" src="{{ $url }}" alt="Photo de profil" class="w-full ">
+        @else
+        <img id="output" src="https://fastly.picsum.photos/id/238/450/200.jpg?hmac=vy5OV4OwcfPBsjgLtZks97bfoIEBProUzHqGcLgmz5E" alt="Photo de profil" class="w-full">
+        @endif 
         <!-- Icon overlay, assuming you have SVGs or an icon font set -->
        
             <!-- Input file caché -->
@@ -110,7 +113,7 @@
             <!-- Bouton Submit 
             <button class="bg-green px-4 py-2 rounded-3xl text-white  font-bold w-36 shadow-lg">Save</button>
             -->
-            <button type="submit" :disabled="{{!$photoIsUploaded && $isPhoto}}">
+            <button type="submit" class="px-4 py-2 bg-blue-light text-white rounded hover:bg-blue-light3 hover:border hover:border-blue-light focus:outline-none" :disabled="{{!$photoIsUploaded && $isPhoto}}">
                 Save photo
                 @if(!$photoIsUploaded)
                 <span class="{{ !$photoIsUploaded && !$isPhoto ? 'hidden' : ''}}">

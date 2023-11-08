@@ -104,4 +104,10 @@ class User extends Authenticatable
         return $this->receivedRatings()->avg('rating'); // En supposant que vous avez une relation `receivedRatings` pour les notations reçues par cet utilisateur.
     }
 
+    //Catégories de l'utilisateur/organisateur category_user
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
+
 }

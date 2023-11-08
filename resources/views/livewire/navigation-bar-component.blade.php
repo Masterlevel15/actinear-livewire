@@ -6,7 +6,7 @@
     </a>
     
     <!-- Profile Icon -->
-    <a href="{{ route('profile.show') }}" class="">
+    <a href="{{ auth()->check() ? route('promoter-profile-edit', auth()->user()->id ) : route('register') }}" class="">
         <i class="fa-solid fa-user fa-lg"></i>
     </a>
 
@@ -21,7 +21,7 @@
     </a>
     
     <!-- Settings Icon -->
-    <a href="/settings" class="">
+    <a href="{{ route('profile.show') }}" class="">
         <i class="fa-solid fa-gear fa-lg"></i>
     </a>
   </nav>
