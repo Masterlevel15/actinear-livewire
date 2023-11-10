@@ -3,7 +3,7 @@
 <div class="bg-blue-gray rounded-xl overflow-hidden shadow-lg flex flex-col min-w-[45vh]">
     <!-- Image -->
     <div class="relative h-40">
-      <img src="https://fastly.picsum.photos/id/238/450/200.jpg?hmac=vy5OV4OwcfPBsjgLtZks97bfoIEBProUzHqGcLgmz5E" alt="Image de l'activité" class="w-full h-full object-cover rounded-t-lg">
+      <img src="{{$imageUrl}}" alt="Image de l'activité" class="w-full h-full object-cover rounded-t-lg">
       <!-- Rectangle avec nom de la catégorie -->
       <div class="absolute top-0 left-0 bg-white text-blue-gray py-1 px-2 rounded-lg text-xs mt-2 ml-2">
       {{ $activity->category->name }}
@@ -15,7 +15,8 @@
         </div>
       </div>
       <!-- Date (jour et mois) -->
-      <div class="absolute bottom-0 right-0 mb-2 mr-2 text-slate-50">
+      <div class="absolute bottom-1 right-[0.5vh] bg-slate-500  w-[18vh] h-[4vh] opacity-30 rounded-lg"></div>
+      <div class="absolute bottom-0 right-0 mb-2 mr-2 text-slate-50 ">
         {{ $activity->date->format('d F Y') }}
       </div>
     </div>
@@ -53,7 +54,7 @@
       <!-- Participants -->
       <div class="flex items-center mt-2 text-slate-50">
         <i class="fa-solid fa-user"></i>
-        <span class="ml-1"> /5 Participants</span>
+        <span class="ml-1">Participants {{ $activity->registeredUsers->count() }} / {{$activity->participants_number}} </span>
       </div>
     </div>
     <!-- Bouton "Info" -->

@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container mb-24">
     <!--Authentification -->
     @if(auth()->check())
         <div class="flex justify-around mt-4">
@@ -40,7 +40,9 @@
             <i class="fa-solid fa-filter fa-flip-horizontal text-xl"></i>
         </a>
         <!-- Icône carte -->
-        <i class="fa-solid fa-map text-xl"></i>
+        <a href="{{ route('map') }}">
+            <i class="fa-solid fa-map text-xl"></i>
+        </a>
     </div>
     <livewire:category-component />
     

@@ -6,8 +6,6 @@
     @else
         <livewire:loading /> 
     @endif
-    <p>Latitude: {{ $latitude }}</p>
-    <p>Longitude: {{ $longitude }}</p>
 </div>
 
 <!--

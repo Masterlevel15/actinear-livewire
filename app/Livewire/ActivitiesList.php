@@ -13,6 +13,7 @@ class ActivitiesList extends Component
     public $activities;
     public $queryHistory = [];
 
+    /*
     #[On('search-query')] 
     public function updateActivities()
     {
@@ -24,12 +25,12 @@ class ActivitiesList extends Component
         $this->render();
         return view('livewire.activities-list');
     }
-
+    */
 
     public function mount($activities)
     {
-       
         
+        /*
         if(request('searchQuery') || (!in_array(request('searchQuery') , $this->queryHistory) && request('searchQuery')) )
         {
            
@@ -40,6 +41,7 @@ class ActivitiesList extends Component
         else{
             $this->activities = $activities; 
         }
+        */
     }
     public function render()
     {

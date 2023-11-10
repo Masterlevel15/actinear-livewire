@@ -6,8 +6,9 @@
         @if (collect($suggestions)->isNotEmpty())
         <ul class="absolute bg-white border border-gray-300 rounded-lg mt-2 left-0 right-0 z-10" style="top: 2rem;" id="suggestions"> <!-- Ajustez la valeur '2.5rem' en fonction de la hauteur de votre input -->
             @foreach ($suggestions as $suggestion)
-            
-                <li class="p-2 hover:bg-gray-100 text-black" wire:click="selectSuggestion('{{ json_encode($suggestion)  }}')">{{ $suggestion->name }}</li>
+                <a href="{{ route('activity-details', ['id' => $suggestion->id] ) }}">
+                    <li class="p-2 hover:bg-gray-100 text-black" >{{ $suggestion->title }}</li>
+                </a>
             @endforeach
         </ul>
 

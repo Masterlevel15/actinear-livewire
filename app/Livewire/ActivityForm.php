@@ -96,7 +96,8 @@ class ActivityForm extends Component
             'term' => 'required',
             'participants_number' => 'required',
             'address' => 'required',
-            'photo' => 'image|max:1024', // 1MB Max
+            'photo' => 'max:1024', // 1MB Max
+            'selectedCategory' => 'required',
         ]);
         /*
         $this->validate([
@@ -121,7 +122,7 @@ class ActivityForm extends Component
 
         if (!$this->getErrorBag()->has('city')) {
             //Stockage de l'image depuis le serveur
-            if($this->photo)
+            /*if($this->photo)
             {
                 try {
                     $filename = $this->photo->getClientOriginalName(); // Assurez-vous de nettoyer le nom de fichier
@@ -129,7 +130,8 @@ class ActivityForm extends Component
                 } catch (\Exception $e) {
                     dd($e->getMessage());
                 }
-            }  
+            } 
+            */ 
 
             $activity = new Activity;
             $activity->title = $this->title;
@@ -147,7 +149,7 @@ class ActivityForm extends Component
 
             if($this->photo)
             {
-                $activity->image = $this->photo->getClientOriginalName();
+                $activity->image = $this->photo;
             }
             else
             {
@@ -183,7 +185,7 @@ class ActivityForm extends Component
                 $countryExisting = Country::where('name', $this->country)->first();
                 if(!$countryExisting)
                 {
-                    $country = new City;
+                    $country = new Country;
                     $country->name = ucfirst(strtolower($this->$country));
                     $country->save();
 

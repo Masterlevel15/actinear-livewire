@@ -6,10 +6,6 @@
     <div  id="map" class="relative w-full h-screen z-0" wire:ignore>Map</div>
     <!-- Slider-->
     <div id="distance-slider-container" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white p-4 rounded-lg z-10 mb-16" >
-    @foreach($activities as $activity){
-        {{$activity->distance}}
-    }
-    @endforeach
     
              <div id="distance" class="fixed left-1/2 -translate-x-1/2 -top-full transform-gpu -translate-y-2 bg-white p-2 rounded shadow">
              
@@ -159,6 +155,8 @@ document.addEventListener('livewire:initialized', () => {
 
 <script>
   document.addEventListener('livewire:initialized', () => {
+    var activityDetailsBaseUrl = "{{ url('activity-details') }}";
+    var baseImagePath = @json(asset('images'));
   let markers = []; // Déclarez une variable markers en dehors de la fonction
   let map;
   const rangeSlider = document.getElementById('distance-slider');
@@ -215,7 +213,29 @@ document.addEventListener('livewire:initialized', () => {
     // Ajoutez les nouveaux marqueurs à la carte
     activities.forEach((activity) => {
       const marker = L.marker([activity.latitude, activity.longitude]).addTo(map);
-      markers.push(marker);
+      //markers.push(marker);
+      // Créer un élément de div pour le contenu du popup
+      const popupContent = document.createElement('div');
+
+    // Ajouter le titre de l'activité au contenu du popup
+    const title = document.createElement('h1');
+    title.textContent = activity.title;
+    popupContent.appendChild(title);
+
+    // Ajouter l'image de l'activité au contenu du popup
+    const image = document.createElement('img');
+    image.src = (activity.image && !activity.image.startsWith('http://') && !activity.image.startsWith('https://') ? baseImagePath + '/'  + activity.image : activity.image);
+    popupContent.appendChild(image);
+
+    // Ajouter un lien vers la route show de l'activité
+    const link = document.createElement('a');
+    link.href = `${activityDetailsBaseUrl}/${activity.id}`;
+    link.textContent = 'Voir les détails';
+    popupContent.appendChild(link);
+
+    // Associer le contenu du popup au marqueur
+    marker.bindPopup(popupContent);
+    markers.push(marker);
     });
   }
 

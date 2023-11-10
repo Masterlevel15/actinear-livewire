@@ -124,7 +124,27 @@
             @error('city')
                 <span class="text-red-500">{{ $message }}</span>
             @enderror
-
+            @error('title')
+                <span class="text-red-500">{{ $message }}</span>
+            @enderror
+            @error('date')
+                <span class="text-red-500">{{ $message }}</span>
+            @enderror
+            @error('term')
+                <span class="text-red-500">{{ $message }}</span>
+            @enderror
+            @error('participants_number')
+                <span class="text-red-500">{{ $message }}</span>
+            @enderror
+            @error('address')
+                <span class="text-red-500">{{ $message }}</span>
+            @enderror
+            @error('selectedCategory')
+                <span class="text-red-500">{{ $message }}</span>
+            @enderror
+            @error('photo')
+                <span class="text-red-500">{{ $message }}</span>
+            @enderror
         </div>
     </form>
 </div>

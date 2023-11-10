@@ -7,9 +7,11 @@
         @foreach($activity->registeredUsers as $user)
             <!-- Bulles avec les photos des utilisateurs -->
             <div class="flex space-x-2 overflow-x-auto">
-                <div class="w-12 h-12 bg-white rounded-full">
-                    <img src="https://fastly.picsum.photos/id/238/450/200.jpg?hmac=vy5OV4OwcfPBsjgLtZks97bfoIEBProUzHqGcLgmz5E" alt="Participant" class="w-full h-full rounded-full object-cover">
-                </div>
+                <a href="{{ route('promoter-profile',   $user->id) }}">
+                    <div class="w-12 h-12 bg-white rounded-full">
+                        <img src="https://fastly.picsum.photos/id/238/450/200.jpg?hmac=vy5OV4OwcfPBsjgLtZks97bfoIEBProUzHqGcLgmz5E" alt="Participant" class="w-full h-full rounded-full object-cover">
+                    </div>
+                </a>
             </div>
         @endforeach
     </div>

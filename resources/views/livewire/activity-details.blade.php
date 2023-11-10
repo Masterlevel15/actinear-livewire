@@ -1,7 +1,7 @@
-<div>
+<div class="mb-32">
     <div class="relative">
         <!-- Image en arrière-plan (à remplacer par votre URL d'image) -->
-        <img src="https://fastly.picsum.photos/id/238/450/200.jpg?hmac=vy5OV4OwcfPBsjgLtZks97bfoIEBProUzHqGcLgmz5E" alt="Background Image" class="w-full h-96 object-cover">
+        <img src="{{$imageUrl}}" alt="Background Image" class="w-full h-96 object-cover">
 
         <!-- Bandelette transparente -->
         <div class="absolute top-0 left-0 w-full h-12 bg-black bg-opacity-50 flex items-center justify-between px-[1.8vh] py-[4vh]">
@@ -38,7 +38,7 @@
     <!-- Bandelette date + localité -->
     <div class="w-full bg-blue-gray py-4 flex items-center justify-between px-4">
         <!-- Date du côté gauche -->
-        <span class="text-white text-md ml-2">11 Novembre</span>
+        <span class="text-white text-md ml-2">{{ $selectedActivity->date->format('d F Y') }}</span>
 
         <!-- Catégorie dans un rectangle arrondi blanc du côté droit -->
         <div class="bg-white px-2 py-1 text-sm rounded-[1.5vh] mr-4">
@@ -53,7 +53,7 @@
     <!-- Espacement vertical important -->
     <div class="mt-6">
         <!-- Date en taille de police discrète -->
-        <p class="text-white text-sm">11 Novembre</p>
+        <p class="text-white text-sm">{{ $selectedActivity->date->format('d F Y') }}</p>
 
         <!-- Espacement vertical -->
         <div class="mt-4">
@@ -111,25 +111,6 @@
             </div>
         </div>
 
-        <!-- Section des participants -->
-        <div class="mt-12 mb-4">
-            <p class="text-white text-sm mb-2">158/{{$selectedActivity->participants_number}} participants</p>
-            
-            <!-- Bulles avec les photos des utilisateurs -->
-            <div class="flex space-x-2 overflow-x-auto">
-                <!-- Remplacez URL_DE_LA_PHOTO avec l'URL de la photo de chaque utilisateur -->
-                <div class="w-12 h-12 bg-white rounded-full">
-                    <img src="https://fastly.picsum.photos/id/238/450/200.jpg?hmac=vy5OV4OwcfPBsjgLtZks97bfoIEBProUzHqGcLgmz5E" alt="Participant" class="w-full h-full rounded-full object-cover">
-                </div>
-                <!-- Répétez cette div pour chaque utilisateur -->
-            </div>
-        </div>
-
-        <!-- Bouton S'inscrire -->
-        <div class="mt-8 mb-12 ">
-            <button class="bg-green px-4 py-2 rounded-3xl text-white  font-bold w-36 shadow-lg">S'inscrire</button>
-        </div>
-    </div>
     
     @if (session()->has('error_message'))
         <div class="bg-red-500 text-white p-4 rounded mt-4">
@@ -158,4 +139,6 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
+    
+    L.marker([latitude, longitude]).addTo(map);
 </script>

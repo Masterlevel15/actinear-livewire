@@ -48,7 +48,7 @@ class PromoterEdit extends Component
         }
         if(auth()->user()->country_id)
         {
-            $country = City::where('id', auth()->user()->country_id)->first();
+            $country = Country::where('id', auth()->user()->country_id)->first();
             $this->country = $country->name;
         }
         if(auth()->user()->categories)
@@ -87,7 +87,31 @@ class PromoterEdit extends Component
                 auth()->user()->photo = $this->photo;
             }  
         }
-    }  
+    }
+    public function resetDataForm()
+    {
+        $this->pseudo = null;
+        
+        $this->firstName = null;
+        $this->lastName = null;
+        
+        $this->intro = null;
+        
+        $this->description = null;
+        
+        $this->birthDate = null;
+            
+        $this->city = null;
+           
+        $this->country = null;
+        
+        $this->url = null;
+        $this->photo = null;
+
+        $this->email = null;
+
+        $this->selectedCategories = [];
+    }
     public function fileSet()
     {
         $this->photoIsUploaded = false;
@@ -107,13 +131,19 @@ class PromoterEdit extends Component
     }
     public function save()
     {
+       
         $this->validate([
             'email' => 'required',
             'firstName' => 'required',
             'lastName' => 'required',
-            'photo' => 'image|max:512', // 1MB Max
+            'photo' => 'max:512', // 1MB Max
         ]);
         $user = auth()->user();
+        if($this->photo !== $user->photo)
+        {
+            $user->photo = $this->photo;
+        }
+        
         if($this->pseudo !== $user->pseudo)
         {
             $user->pseudo = $this->pseudo;
@@ -158,7 +188,7 @@ class PromoterEdit extends Component
         }
         if($this->country)
         {
-            $countryExisting = City::where('name', ucfirst(strtolower($this->country)))->first();
+            $countryExisting = Country::where('name', ucfirst(strtolower($this->country)))->first();
             if(!$countryExisting)
             {
                 $country = new City;   
@@ -210,6 +240,8 @@ class PromoterEdit extends Component
         }
         */
         $user->save();
+       
+        $this->redirectRoute('promoter-profile', ['promoterId' => $user->id]);
 
     }
     public function render()
