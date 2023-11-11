@@ -5,9 +5,11 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Activity;
 use Illuminate\Support\Facades\Session;
+use Carbon\Carbon;
 
 class ActivityComponent extends Component
 {
+
     #[Reactive] 
     public $latitude;
     public $longitude, $distance;
@@ -65,7 +67,8 @@ class ActivityComponent extends Component
     }
     public function sortActivitiesByDate()
     {
-       $this->sortedActivitiesByDate = Activity::with('promoter', 'category', 'country', 'city')->whereYear('date', '>=', 2023)->orderBy('date', 'desc')
+       $currentDate = Carbon::now();
+       $this->sortedActivitiesByDate = Activity::with('promoter', 'category', 'country', 'city')->whereDate('date', '>=', $currentDate)->orderBy('date', 'asc')
         ->get();  
     }
     public function mount()

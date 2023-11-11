@@ -41,9 +41,11 @@
         <span class="text-white text-md ml-2">{{ $selectedActivity->date->format('d F Y') }}</span>
 
         <!-- Catégorie dans un rectangle arrondi blanc du côté droit -->
-        <div class="bg-white px-2 py-1 text-sm rounded-[1.5vh] mr-4">
-            <span class="text-[#006666]">{{$selectedActivity->category->name}}</span>
-        </div>
+        <a href="{{ route('activities-by-category', ['categoryId' => $selectedActivity->category->id ]) }}">
+            <div class="bg-white px-2 py-1 text-sm rounded-[1.5vh] mr-4">
+                <span class="text-[#006666]">{{$selectedActivity->category->name}}</span>
+            </div>
+        </a>
     </div>
 
     <div class="px-4 mt-16">

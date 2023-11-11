@@ -5,9 +5,11 @@
     <div class="relative h-40">
       <img src="{{$imageUrl}}" alt="Image de l'activité" class="w-full h-full object-cover rounded-t-lg">
       <!-- Rectangle avec nom de la catégorie -->
-      <div class="absolute top-0 left-0 bg-white text-blue-gray py-1 px-2 rounded-lg text-xs mt-2 ml-2">
-      {{ $activity->category->name }}
-      </div>
+      <a href="{{ route('activities-by-category', ['categoryId' => $activity->category->id ]) }}">
+        <div class="absolute top-0 left-0 bg-white text-blue-gray py-1 px-2 rounded-lg text-xs mt-2 ml-2">
+        {{ $activity->category->name }}
+        </div>
+      </a>
       <!-- Bulle de bookmark -->
       <div class="absolute top-0 right-0 mt-2 mr-2">
         <div class="bg-white text-blue-gray rounded-full w-[5vh] h-[5vh] flex items-center justify-center">
@@ -31,6 +33,7 @@
         <span class="ml-1">{{ $activity->city->name }}, {{ number_format($activity->distance, 0); }} km</span>
       </div>
       <!-- Utilisateur et notation -->
+      <a href="{{ route('promoter-profile', $activity->promoter->id) }}">
       <div class="flex items-center mt-2 text-slate-50">
         <i class="fa-solid fa-user"></i>
         <span class="ml-1">{{$activity->promoter->name}}</span>
@@ -51,6 +54,7 @@
           @endfor
         </div>
       </div>
+      </a>
       <!-- Participants -->
       <div class="flex items-center mt-2 text-slate-50">
         <i class="fa-solid fa-user"></i>

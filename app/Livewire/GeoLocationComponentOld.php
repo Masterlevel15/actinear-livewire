@@ -15,29 +15,56 @@ use App\Models\City;
 use App\Models\Country;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+ 
 
-class GeolocationComponent extends Component
+class GeoLocationComponentOld extends Component
 {
     public $latitude;
     public $longitude;
+    public $nearbyActivities;
+    public $message;
+    public $geolocationDenied = false;
     public $positionFound = false;
-    public $citySelected = true;
-    public $loadingActive = false;
+    public $offline = false;
     
-    #[On('geolocation-denied')]
-    public function geolocationDenied()
+    #[On('input-city')] 
+    public function queryInputCity($city)
     {
-        session()->flash('geolocation-denied'); 
+        $this->offline = true;
+        //$this->dispatch('input-city-active', geolocationDenied: false );
+        $httpClient = new GuzzleClient();
+        $userAgent = 'together-app-jetstream';
+
+        $nominatim = new Nominatim($httpClient, 'https://nominatim.openstreetmap.org', $userAgent);
+
+        $result = $nominatim->geocodeQuery(GeocodeQuery::create($city));
+
+        if ($result->count() > 0) {
+                    
+            $this->latitude = $result->first()->getCoordinates()->getLatitude();
+            $this->longitude = $result->first()->getCoordinates()->getLongitude();
+        }
+        $this->positionFound = true;
+        session(['latitude' => $this->latitude, 'longitude' => $this->longitude]);
     }
+
+    #[On('geolocation-denied')] 
+    public function geolocationDenied($positionFound)
+    {
+        if(!$this->offline)
+        {
+            $this->positionFound = $positionFound;
+        }
+        
+    }
+
     #[On('location-retrieved')] 
     public function setLocation($latitude, $longitude, $positionFound)
     {
         $this->positionFound = $positionFound;
         $this->latitude = $latitude;
         $this->longitude = $longitude;
-        
-        //
-        session()->forget('geolocation-denied');
+        // Ici, vous pouvez exécuter la requête qui nécessite les coordonnées
     }
 
     public function updateAdress()
@@ -125,67 +152,24 @@ class GeolocationComponent extends Component
         sleep(($timeout/1000));
         $fn;
     }  
-    /*
-    #[On('start-loading')]
-    public function startLoading()
-    {
-        //on lance le composant de chargement lors de l'éxécution du composant actuel
-        session()->flash('loading-active');
-    }
-    */
 
-    #[On('stop-loading')]
-    public function stopLoading()
-    {
-        //on stope le chargement en fonction du délai établi en js avec le setTimeout
-        session()->forget('loading-active');
-    }
-
-/*
-    #[On('coordinates-offline')]
-    public function coordinatesOffline()
-    {
-            //session()->flash('loading-active');
-            $geolocation = session('geolocation-offline');
-            $this->latitude = $geolocation['latitude'];
-            $this->longitude = $geolocation['longitude'];
-            $this->positionFound = true;
-    }
-    */
-
-
-    #[On('coordinates-offline')]
     public function mount()
     {
-        if(session('component_load_count') >= 1)
+        if(Session::has('longitude') && Session::has('latitude'))
         {
-            //dd(session('component_load_count'));
-            session()->flash('loading-active');
-        }
-        
-        //session()->forget('geolocation-offline');
-        if (session()->has('geolocation-offline')) 
-        {
-            $this->loadCount = session('component_load_count', 0) + 1;
-            session(['component_load_count' => $this->loadCount]);
-            //session()->flash('loading-active');
-            
-            //session()->forget('loading-active');
-            
-            $geolocation = session('geolocation-offline');
-            $this->latitude = $geolocation['latitude'];
-            $this->longitude = $geolocation['longitude'];
+            $this->longitude = Session::get('longitude');
+            $this->latitude = Session::get('latitude');
             $this->positionFound = true;
         }
-        else
-        {
-            $this->loadCount = 0;
-            session(['component_load_count' => $this->loadCount]);
-        }
+        //session()->forget('longitude');
+        //session()->forget('latitude');
+
+        $this->setTimeout(session()->forget('set-loading'), 500);
     }
+
 
     public function render()
     {
-        return view('livewire.geolocation-component');
+        return view('livewire.geo-location-component-old');
     }
 }

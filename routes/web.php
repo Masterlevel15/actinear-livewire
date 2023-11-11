@@ -49,9 +49,6 @@ Route::get('/activities/book/{userId?}', ActivitiesBook::class)->name('activitie
 //Détails activité
 Route::get('/activity-details/{id}', ActivityDetails::class)->name('activity-details');
 
-//Ajout activité
-Route::get('/activity/create', ActivityForm::class)->name('activity-create');
-
 //Profil organisateur
 Route::get('/promoter-profile/{promoterId}', PromoterProfile::class)->name('promoter-profile');
 
@@ -76,4 +73,6 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+    //Ajout activité
+    Route::get('/activity/create', ActivityForm::class)->name('activity-create');
 });

@@ -1,10 +1,10 @@
-<div class="max-w-sm h-auto mx-auto bg-blue-lagon px-3 py-4 pb-24" x-data="{ imageUrl: '' }">
+<div class="max-w-sm h-auto mx-auto bg-blue-lagon px-3 py-4 pb-24">
     <!--Top Bar Action-->
     <div class="fixed top-0 left-0 w-full h-12 bg-black bg-blue-light2 flex items-center justify-between px-[1.8vh] py-[4vh] z-10">
             <!-- Icône flèche à gauche -->
-        <button >
+        <button type="button" @click="goBack()">
             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"></path></svg>
-        </button>
+        </button type="button" x-onClick>
             <!-- Icônes dans des bulles blanches à droite -->
             <!-- Icône ReInit-->
             <div class=" w-[5vh] h-[5vh] bg-white p-2 rounded-full flex items-center justify-center mr-4">
@@ -113,7 +113,7 @@
             <!-- Bouton Submit 
             <button class="bg-green px-4 py-2 rounded-3xl text-white  font-bold w-36 shadow-lg">Save</button>
             -->
-            <button type="submit" class="px-4 py-2 bg-blue-light text-white rounded hover:bg-blue-light3 hover:border hover:border-blue-light focus:outline-none" :disabled="{{!$photoIsUploaded && $isPhoto}}">
+            <button type="submit" class="px-4 py-2 bg-blue-light text-white rounded hover:bg-blue-light3 hover:border hover:border-blue-light focus:outline-none" :disabled="@json(!$photoIsUploaded && $isPhoto)">
                 Save photo
                 @if(!$photoIsUploaded)
                 <span class="{{ !$photoIsUploaded && !$isPhoto ? 'hidden' : ''}}">
@@ -149,16 +149,8 @@
     </form>
 </div>
 
-
 <script>
-    function fileChanged() {
-        const photoInput = this.$refs.photo;
-        if (photoInput.files && photoInput.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                this.imageUrl = e.target.result; // Mettre à jour imageUrl pour afficher l'image
-            };
-            reader.readAsDataURL(photoInput.files[0]); // Convertir l'image en URL de données
-        }
+    function goBack() {
+        window.history.back();
     }
 </script>

@@ -36,7 +36,7 @@
     <div class="flex items-center justify-between pr-[4.5vh] text-slate-50 pl-[3.75vh] pb-[3vh]">
         <livewire:search-bar-component2/>
         <!-- Icône filtre -->
-        <a href="{{ route('filter', ['categories']) }}">
+        <a href="{{ route('filter') }}">
             <i class="fa-solid fa-filter fa-flip-horizontal text-xl"></i>
         </a>
         <!-- Icône carte -->
@@ -46,6 +46,6 @@
     </div>
     <livewire:category-component />
     
-    <livewire:geo-location-component />
+    <livewire:geolocation-component />
     
 </div>

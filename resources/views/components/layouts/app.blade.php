@@ -13,6 +13,7 @@
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin=""></script>
         @vite(['resources/css/app.css','resources/js/app.js'])
+        
     </head>
     <body class="bg-gradient-to-b from-blue-light to-blue-dark">
         {{ $slot }}

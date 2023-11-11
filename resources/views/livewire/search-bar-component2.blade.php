@@ -21,6 +21,7 @@
 </div>
 
 <script>
+/*
     document.getElementById('searchBar').addEventListener('blur', function() {
         document.getElementById('suggestions').style.display = 'none';
     });
@@ -28,6 +29,5 @@
     document.getElementById('searchBar').addEventListener('blur', function() {
         document.getElementById('suggestions').style.display = 'none';
     });
-
-
+*/
 </script>
