@@ -73,7 +73,6 @@ class ActivityComponent extends Component
     }
     public function mount()
     {
-            
 
             $this->activities = Activity::with('promoter', 'category', 'country', 'city')->whereYear('date', '>=', 2023)
             ->get();

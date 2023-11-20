@@ -23,21 +23,27 @@ class GeolocationComponent extends Component
     public $positionFound = false;
     public $citySelected = true;
     public $loadingActive = false;
+    public $token = false;
     
     #[On('geolocation-denied')]
     public function geolocationDenied()
     {
-        session()->flash('geolocation-denied'); 
+        session()->flash('geolocation-denied');
+        session()->forget('location-retrieved'); 
     }
     #[On('location-retrieved')] 
-    public function setLocation($latitude, $longitude, $positionFound)
+    public function setLocation($latitude, $longitude, $positionFound, $token)
     {
+        $this->token = $token;
+        //session()->flash('location-retrieved');
+
         $this->positionFound = $positionFound;
         $this->latitude = $latitude;
         $this->longitude = $longitude;
         
         //
         session()->forget('geolocation-denied');
+        session()->forget('geolocation-offline');
     }
 
     public function updateAdress()
@@ -164,18 +170,23 @@ class GeolocationComponent extends Component
         }
         
         //session()->forget('geolocation-offline');
-        if (session()->has('geolocation-offline')) 
+        if (!session()->has('location-retrieved')) 
         {
-            $this->loadCount = session('component_load_count', 0) + 1;
-            session(['component_load_count' => $this->loadCount]);
-            //session()->flash('loading-active');
+            if( session()->has('geolocation-offline'))
+            {
+                $this->loadCount = session('component_load_count', 0) + 1;
+                session(['component_load_count' => $this->loadCount]);
+                //session()->flash('loading-active');
             
-            //session()->forget('loading-active');
+                //session()->forget('loading-active');
             
-            $geolocation = session('geolocation-offline');
-            $this->latitude = $geolocation['latitude'];
-            $this->longitude = $geolocation['longitude'];
-            $this->positionFound = true;
+                $geolocation = session('geolocation-offline');
+                $this->latitude = $geolocation['latitude'];
+                $this->longitude = $geolocation['longitude'];
+                $this->positionFound = true;
+
+            }
+            
         }
         else
         {
