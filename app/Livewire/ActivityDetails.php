@@ -11,6 +11,7 @@ class ActivityDetails extends Component
     public $id;
     public $distance;
     public $imageUrl;
+    public $photoUrl;
     
 
     public function getActivityFromSearch()
@@ -29,6 +30,7 @@ class ActivityDetails extends Component
         $this->id = $id;
         $this->selectedActivity =  Activity::with('promoter', 'category', 'country', 'city')->find($id);
         $this->getImage();
+        $this->getPromoterPhoto();
     }
     public function getImage()
     {
@@ -42,6 +44,25 @@ class ActivityDetails extends Component
             // C'est un nom de fichier, vous devez construire le chemin
             // En supposant que vos images sont stockées dans le répertoire 'storage/app/public/images'
             $this->imageUrl = asset('images/' . $image);
+        }
+    }
+
+    public function getPromoterPhoto()
+    {
+        $image = $this->selectedActivity->promoter->photo;
+
+        // Vérifier si l'image contient un chemin complet (une URL)
+        if (preg_match('/^https?:\/\//', $image)) {
+            // C'est une URL, vous pouvez l'utiliser directement dans la balise <img>
+            $this->photoUrl = $image;
+        } else if($image !== null) {
+            // C'est un nom de fichier, vous devez construire le chemin
+            // En supposant que vos images sont stockées dans le répertoire 'storage/app/public/images'
+            $this->photoUrl = asset('images/' . $image);
+        }
+        else
+        {
+            $this->photoUrl = 'https://fastly.picsum.photos/id/238/450/200.jpg?hmac=vy5OV4OwcfPBsjgLtZks97bfoIEBProUzHqGcLgmz5E';
         }
     }
 

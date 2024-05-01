@@ -87,7 +87,7 @@
             
             <!-- Bulle avec le profil de l'organisateur -->
             <div class="my-3 ml-2 w-14 h-14 inline-block bg-white rounded-full">
-                <img src="https://fastly.picsum.photos/id/238/450/200.jpg?hmac=vy5OV4OwcfPBsjgLtZks97bfoIEBProUzHqGcLgmz5E" alt="Organisateur" class="w-full h-full rounded-full object-cover">
+                <img src="{{ $photoUrl }}" alt="Organisateur" class="w-full h-full rounded-full object-cover">
             </div>
             
             <!-- Nom de l'organisateur -->

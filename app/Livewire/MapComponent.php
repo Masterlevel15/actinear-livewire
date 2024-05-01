@@ -7,7 +7,7 @@ use App\Models\Activity;
 
 class MapComponent extends Component
 {
-    public $distance, $activities, $sliderValue, $inputValue, $newDistance, $change;
+    public $distance, $activities, $sliderValue, $inputValue, $newDistance, $change, $latitude, $longitude;
     public function getActivitiesByRange()
     {
         $this->activities = Activity::where('distance', '<=', $this->distance)->get();
@@ -18,6 +18,14 @@ class MapComponent extends Component
         $this->distance = 50;
         $this->sliderValue = $this->distance;
         $this->getActivitiesByRange();
+
+        if(session()->has('geolocation-offline') && session()->has('geolocation-denied'))
+        {
+            $geolocation = session('geolocation-offline');
+
+            $this->latitude = $geolocation['latitude'];
+            $this->longitude = $geolocation['longitude'];
+        }
         
     }
     

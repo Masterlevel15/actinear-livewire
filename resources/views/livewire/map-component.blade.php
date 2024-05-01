@@ -163,6 +163,16 @@ document.addEventListener('livewire:initialized', () => {
   let circle;
   let latitude;
   let longitude;
+  let locationRetrieved = Boolean;
+  const hasGeolocationOffline = @json(session()->has('geolocation-offline'));
+  const hasGeolocationDenied = @json(session()->has('geolocation-denied'));
+
+  if(hasGeolocationOffline && hasGeolocationDenied)
+  {
+    latitude = @json($latitude);
+    longitude = @json($longitude);
+    locationRetrieved = true;
+  }
 
   @this.on('sendActivities', (event) => {
     var newActivities = event[0].activities;
@@ -172,7 +182,8 @@ document.addEventListener('livewire:initialized', () => {
   });
 
   // Code pour initialiser la carte ici...
-  if ("geolocation" in navigator) {
+  if ("geolocation" in navigator && !hasGeolocationDenied) {
+    
     const loader = document.querySelector('#loader');
     
     // Obtenez la position de l'utilisateur
@@ -200,6 +211,24 @@ document.addEventListener('livewire:initialized', () => {
       });
   } else {
     console.log("La géolocalisation n'est pas prise en charge par ce navigateur.");
+    if(locationRetrieved)
+    {
+      map = L.map('map').setView([latitude, longitude], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+
+        loader.classList.add('hidden');
+
+        // Reste du code d'initialisation de la carte...
+
+        // Appel initial pour afficher les marqueurs des activités
+        var activities = JSON.parse(document.getElementById("map-component").dataset.activities);
+
+        updateMapWithActivities(activities);
+        addDistanceRange();
+    }
   }
 
   function updateMapWithActivities(activities) {

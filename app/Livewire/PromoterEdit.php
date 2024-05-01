@@ -12,7 +12,7 @@ class PromoterEdit extends Component
 {
     use WithFileUploads;
 
-    public $selectedCategories = [], $categories, $categoriesId = [], $pseudo, $category_id, $intro, $description, $firstName, $lastName, $birthDate, $city, $country, $photo, $email, $url, $photoIsUploaded = false, $isPhoto = false;
+    public $selectedCategories = [], $categories, $categoriesId = [], $pseudo, $category_id, $intro, $description, $firstName, $lastName, $birthDate, $city, $country, $photo, $email, $url, $photoIsUploaded = false, $isPhoto = false, $website;
     public function mount()
     {
         $this->categories = Category::all();
@@ -23,11 +23,19 @@ class PromoterEdit extends Component
         if(auth()->user()->name)
         {
             $fullName = auth()->user()->name;
+            // situation si l'utilisateur crée un compte en introduisant que son nom ou prénom au lieu du nom complet
             $parts = explode( ' ', $fullName);
-            $firstName =  $parts[0];
-            $lastName =  $parts[1];
-            $this->firstName = $firstName;
-            $this->lastName = $lastName;
+            if(count($parts) > 1)
+            {
+                $firstName =  $parts[0];
+                $lastName =  $parts[1];
+                $this->firstName = $firstName;
+                $this->lastName = $lastName;
+            }
+            else
+            {
+                $this->lastName = $fullName;
+            }
         }
         if(auth()->user()->intro)
         {
@@ -67,6 +75,12 @@ class PromoterEdit extends Component
         {
             $this->email = auth()->user()->email;
         }
+        /*
+        if(auth()->user()->website)
+        {
+            $this->website = auth()->user()->website;
+        }
+        */
     }
     public function updatedPhoto()
     {
@@ -94,7 +108,10 @@ class PromoterEdit extends Component
         
         $this->firstName = null;
         $this->lastName = null;
-        
+        /*
+        $this->website = null;
+        */
+
         $this->intro = null;
         
         $this->description = null;
@@ -152,6 +169,14 @@ class PromoterEdit extends Component
         {
             $user->email = $this->email;
         }
+        //Ajout 24 avril 2024
+        /*
+        if($this->website && $this->website !== $user->website)
+        {
+            $user->website = $this->website;
+        }
+        */
+        //
         if($this->intro !== $user->intro)
         {
             $user->intro = $this->intro;

@@ -10,7 +10,7 @@ use App\Models\Country;
 class PromoterProfile extends Component
 {
 
-    public $id, $promoter, $city, $country;
+    public $id, $promoter, $city, $country, $activateNotifRating = false;
 
     public function mount($promoterId)
     {
@@ -24,6 +24,31 @@ class PromoterProfile extends Component
         {
             $this->country = Country::where('id', $this->promoter->country_id)->first();
         }
+    }
+
+    public function addRating() 
+    {
+        if(auth()->check())
+        {
+            if(auth()->user()->id !== $this->promoter->id)
+            {
+                $this->activateNotifRating = true;
+            }
+            else
+            {
+                session()->flash('status', 'Vous ne pouvez pas vous attribuer une note');
+            }
+        }
+        else
+        {
+            $this->redirect('/register'); 
+        }
+        
+    }
+
+    public function disableRating() 
+    {
+        $this->activateNotifRating = false;
     }
 
     public function render()

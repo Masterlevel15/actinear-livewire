@@ -15,9 +15,16 @@ class RegisterResponse implements RegisterResponseContract
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function toResponse($request)
-    {
+    {   /*code Original
         return $request->wantsJson()
                     ? new JsonResponse('', 201)
                     : redirect()->intended(Fortify::redirects('register'));
+        */
+
+        // code modifié
+
+        return $request->wantsJson()
+                    ? new JsonResponse('', 201)
+                    : redirect()->intended(route('homepage'));
     }
 }

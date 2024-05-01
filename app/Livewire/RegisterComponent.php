@@ -8,10 +8,12 @@ use App\Models\Activity;
 class RegisterComponent extends Component
 {
     public $activity;
+    public $photoUrl;
 
     public function mount(Activity $activity)
     {
         $this->activity = $activity;
+        $this->getPromoterPhoto();
     }
 
     public function toggleRegistration()
@@ -36,6 +38,25 @@ class RegisterComponent extends Component
                 }
             }
             $this->activity->refresh();
+        }
+    }
+
+    public function getPromoterPhoto()
+    {
+        $image = $this->activity->promoter->photo;
+
+        // Vérifier si l'image contient un chemin complet (une URL)
+        if (preg_match('/^https?:\/\//', $image)) {
+            // C'est une URL, vous pouvez l'utiliser directement dans la balise <img>
+            $this->photoUrl = $image;
+        } else if($image !== null) {
+            // C'est un nom de fichier, vous devez construire le chemin
+            // En supposant que vos images sont stockées dans le répertoire 'storage/app/public/images'
+            $this->photoUrl = asset('images/' . $image);
+        }
+        else
+        {
+            $this->photoUrl = 'https://fastly.picsum.photos/id/238/450/200.jpg?hmac=vy5OV4OwcfPBsjgLtZks97bfoIEBProUzHqGcLgmz5E';
         }
     }
 

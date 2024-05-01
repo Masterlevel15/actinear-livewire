@@ -16,10 +16,15 @@
         <!-- Photo de profil -->
         <div class="flex justify-center items-center my-4">
             <div class="relative">
-            @if(!$photoIsUploaded && $isPhoto) 
-                    <div class="{{ !$photoIsUploaded && !$isPhoto ? 'hidden' : ''}} mb-16 mx-auto text-center">
+            <!-- ajout le 24 Avril 2024 -->
+            @if($this->url)
+            <img id="output" src="{{ $url }}" alt="Photo de profil" class="rounded-full w-32 h-32">
+            <!-- fin ajout le 24 Avril 2024 -->
+            
+            @elseif(!$photoIsUploaded && $isPhoto) 
+                <div class="{{ !$photoIsUploaded && !$isPhoto ? 'hidden' : ''}} mb-16 mx-auto text-center">
                     <i class="fa fa-spinner fa-spin fa-2xl"></i>
-                    </div>
+                </div>
             @elseif($photoIsUploaded )
                 <img id="output" src="{{ $url }}" alt="Photo de profil" class="rounded-full w-32 h-32">
             @else
@@ -81,6 +86,13 @@
                 @endforeach 
                 </div>
             </div>
+
+            <!-- Site de l'organisateur
+            <label class="block">
+                <span class="text-gray-700">Site Web</span>
+                <input type="text" class="bg-blue-light3 mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="www.website.com" wire:model="website">
+            </label>
+            -->
 
             <!-- Intro-->
             <label class="block">

@@ -11,12 +11,13 @@ class ActivityComponent extends Component
 {
 
     #[Reactive] 
-    public $latitude;
-    public $longitude, $distance;
+    public $latitude, $latitudeOffline;
+    public $longitude, $longitudeOffline, $distance;
     public $sortedActivities = [];
     public $activities;
     public $sortedActivitiesByDate, $sortedActivitiesByDistance, $sortedActivitiesByFilter;
     public $isByDistance = true, $isByDate = true, $isByFilter = false;
+    public $online;
 
     private function radians(float $degrees): float
     {   
@@ -30,6 +31,7 @@ class ActivityComponent extends Component
     }
     public function sortActivitiesWithDistances(float $lat, float $long)
     {
+        
         $distance = 300;
         if($distance === null ){
             $distance = 200;
@@ -55,6 +57,13 @@ class ActivityComponent extends Component
         }
 
         $this->sortedActivities = collect($activitiesSortByRange)->sortBy('distance');
+        
+        //Cas Aucun résultat Activités à proximité
+        if(count($this->sortedActivities) <= 0 || $this->sortedActivitiesByDate == [])
+        {
+            session()->flash('no-results-distance', 'Aucune activité disponible à proximité, veuillez utiliser le filtre pour étendre la recherche.');
+        }
+        //
 
 
         return  $this->sortedActivities;  
@@ -70,29 +79,49 @@ class ActivityComponent extends Component
        $currentDate = Carbon::now();
        $this->sortedActivitiesByDate = Activity::with('promoter', 'category', 'country', 'city')->whereDate('date', '>=', $currentDate)->orderBy('date', 'asc')
         ->get();  
+
+        //Cas Aucun résultat pour Prochaines activités
+        if(count($this->sortedActivitiesByDate) <= 0 || $this->sortedActivitiesByDate == [])
+        {
+            session()->flash('no-results-date', 'Aucune nouvelle activité pour le moment, repassez plus tard.');
+        }
+        //
     }
+
     public function mount()
     {
-
-            $this->activities = Activity::with('promoter', 'category', 'country', 'city')->whereYear('date', '>=', 2023)
+        //dd($this->latitudeOffline, $this->latitude);
+        $this->activities = Activity::with('promoter', 'category', 'country', 'city')->whereYear('date', '>=', 2023)
             ->get();
 
-        
+        if(!Session::has('filter-active'))
+        {
+            $this->sortActivitiesByDate();
+      
+            //$this->latitude = $_SESSION['latitude'];
+            //$this->longitude = $_SESSION['longitude'];
 
-     
-            if(!Session::has('filter-active'))
-            {
+                    
+            $this->sortActivitiesWithDistances(floatval($this->latitude ), floatval($this->longitude));
+            //dd('activityComponent',$this->sortedActivities);
+            
+        }  
 
-                $this->sortActivitiesWithDistances(floatval($this->latitude ), floatval($this->longitude));
-                $this->sortActivitiesByDate();
-            }
+
             if(Session::has('filter-active')){
+                //dd('filter-active');
                 if(Session::has('setting-distance'))
                 {
                     $this->sortedActivities = Session::get('setting-distance');
                     $this->isByDistance = true;
                     $this->isByDate = false;
                     $this->isByFilter = false;
+                    
+                    //Si aucun résultat (tableau vide)
+                    if(count($this->sortedActivities) <= 0 || $this->sortedActivities == [])
+                    {
+                        session()->flash('no-results-distance', 'Aucune activité disponible à proximité, veuillez utiliser le filtre pour étendre la recherche.');
+                    }
                 }
 
                 //dd(Session::get('setting-distance'), Session::get('setting-date'));
@@ -103,6 +132,13 @@ class ActivityComponent extends Component
                     $this->isByDate = true;
                     $this->isByDistance = false;
                     $this->isByFilter = false;
+
+                    //Si aucun résultat (tableau vide)
+                    if(count($this->sortedActivitiesByDate) <= 0 || $this->sortedActivitiesByDate == [])
+                    {
+                        session()->flash('no-results-date', 'Aucune nouvelle activité pour le moment, repassez plus tard.');
+                    }
+                    
                 }
                 if(Session::has('filter') && !Session::has('setting-date') && !Session::has('setting-distance'))
                 {
@@ -111,6 +147,12 @@ class ActivityComponent extends Component
                     $this->isByFilter = true;
                     $this->isByDistance = false;
                     $this->isByDate = false;
+                    
+                    //Si aucun résultat (tableau vide)
+                    if(count($this->sortedActivitiesByFilter) <= 0 || $this->sortedActivitiesByFilter == [])
+                    {
+                        session()->flash('no-results', 'Aucun résultat veuillez étendre la recherche.');
+                    }
                 }
                 
                 if(Session::has('setting-distance') && Session::has('setting-date'))
@@ -118,7 +160,7 @@ class ActivityComponent extends Component
                     $this->isByDistance = true;
                     $this->isByDate = true;
                 }
-            }
+            }  
         
     }
     public function render()

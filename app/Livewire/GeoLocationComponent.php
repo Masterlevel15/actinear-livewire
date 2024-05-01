@@ -18,33 +18,14 @@ use Illuminate\Support\Facades\Session;
 
 class GeolocationComponent extends Component
 {
-    public $latitude;
-    public $longitude;
+    public $latitude = null;
+    public $longitude = null;
+    public $latitudeOffline = null;
+    public $longitudeOffline = null;
     public $positionFound = false;
     public $citySelected = true;
     public $loadingActive = false;
-    public $token = false;
-    
-    #[On('geolocation-denied')]
-    public function geolocationDenied()
-    {
-        session()->flash('geolocation-denied');
-        session()->forget('location-retrieved'); 
-    }
-    #[On('location-retrieved')] 
-    public function setLocation($latitude, $longitude, $positionFound, $token)
-    {
-        $this->token = $token;
-        //session()->flash('location-retrieved');
-
-        $this->positionFound = $positionFound;
-        $this->latitude = $latitude;
-        $this->longitude = $longitude;
-        
-        //
-        session()->forget('geolocation-denied');
-        session()->forget('geolocation-offline');
-    }
+    public $online;
 
     public function updateAdress()
     {
@@ -126,20 +107,6 @@ class GeolocationComponent extends Component
             }
     }
 
-    public function setTimeout($fn, $timeout){
-        // sleep for $timeout milliseconds.
-        sleep(($timeout/1000));
-        $fn;
-    }  
-    /*
-    #[On('start-loading')]
-    public function startLoading()
-    {
-        //on lance le composant de chargement lors de l'éxécution du composant actuel
-        session()->flash('loading-active');
-    }
-    */
-
     #[On('stop-loading')]
     public function stopLoading()
     {
@@ -147,52 +114,185 @@ class GeolocationComponent extends Component
         session()->forget('loading-active');
     }
 
-/*
-    #[On('coordinates-offline')]
-    public function coordinatesOffline()
+    #[On('geolocation-position-denied')]
+    public function geolocationDenied()
+    { 
+       
+        session(['geolocation-denied' => true]);
+    }
+
+    /*
+    #[On('location-retrieved')] 
+    public function setLocation($latitude, $longitude, $positionFound)
     {
-            //session()->flash('loading-active');
-            $geolocation = session('geolocation-offline');
-            $this->latitude = $geolocation['latitude'];
-            $this->longitude = $geolocation['longitude'];
-            $this->positionFound = true;
+        //dd('location-retrieved');
+
+            $this->positionFound = $positionFound;
+            $this->latitude = $latitude;
+            $this->longitude = $longitude;
+
+            session()->forget('geolocation-denied');
+            session()->forget('geolocation-offline');
     }
     */
-
-
+    /*
     #[On('coordinates-offline')]
     public function mount()
     {
+        
         if(session('component_load_count') >= 1)
         {
             //dd(session('component_load_count'));
             session()->flash('loading-active');
         }
-        
-        //session()->forget('geolocation-offline');
-        if (!session()->has('location-retrieved')) 
-        {
-            if( session()->has('geolocation-offline'))
+            if(session()->has('geolocation-offline') && session()->has('geolocation-denied'))
             {
+                //dd('mount');
                 $this->loadCount = session('component_load_count', 0) + 1;
                 session(['component_load_count' => $this->loadCount]);
                 //session()->flash('loading-active');
             
                 //session()->forget('loading-active');
             
+                
                 $geolocation = session('geolocation-offline');
-                $this->latitude = $geolocation['latitude'];
-                $this->longitude = $geolocation['longitude'];
+                $this->latitudeOffline = $geolocation['latitude'];
+                $this->longitudeOffline = $geolocation['longitude'];
                 $this->positionFound = true;
+                $this->statutPosition = false;
 
+
+                //dd(session()->has('geolocation-denied'));
+            }
+            else
+            {
+                $this->loadCount = 0;
+                session(['component_load_count' => $this->loadCount]);
             }
             
+    }
+    */
+    #[On('coordinates-offline')]
+    public function coordinatesOffline()
+    {
+        //dd('coordinates-offline');
+        $this->online = false;
+        //dd('coordinates');
+        $this->latitude = null;
+        $this->longitude = null;
+
+        $geolocation = session('geolocation-offline');
+
+        session_start();
+        /*
+        if(isset($_SESSION['latitudeOffline']) && isset($_SESSION['longitudeOffline']) )
+        {
+
+            unset($_SESSION['latitudeOffline']);
+            unset($_SESSION['longitudeOffline']);
+        }  
+        
+        if(isset($_SESSION['latitude']) && isset($_SESSION['longitude']) )
+        {
+            unset($_SESSION['latitude']);
+            unset($_SESSION['longitude']);
+        }   
+        */
+
+        
+
+        
+        $_SESSION['latitudeOffline'] = $geolocation['latitude'];
+        $_SESSION['longitudeOffline'] = $geolocation['longitude'];
+        
+       
+        $this->latitude = $geolocation['latitude'];
+        $this->longitude = $geolocation['longitude'];
+        $this->positionFound = true;
+
+        session()->forget('location-retrieved');
+    }
+
+    public function mount()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+        } 
+
+        if(session('component_load_count') >= 1)
+        {
+            session()->flash('loading-active');
+        }
+
+        if(session()->has('geolocation-offline') && session()->has('geolocation-denied'))
+        {
+            $this->loadCount = session('component_load_count', 0) + 1;
+            session(['component_load_count' => $this->loadCount]);
+
+            $this->positionFound = true;
+
+            if(isset($_SESSION['latitudeOffline']))
+            {
+                $this->latitude = $_SESSION['latitudeOffline'];
+                $this->longitude = $_SESSION['longitudeOffline']; 
+            }
+            //dd('latitudeOffline');
+               
         }
         else
         {
             $this->loadCount = 0;
             session(['component_load_count' => $this->loadCount]);
         }
+    }
+
+    #[On('location-retrieved')] 
+    public function locationRetrieved($latitude, $longitude, $positionFound)
+    {
+        if(isset($_SESSION['latitudeOffline']))
+        {
+                unset($_SESSION['latitudeOffline']);
+                unset($_SESSION['longitudeOffline']);
+                  
+        }
+        //dd('location-retrieved');
+
+            /*
+            if(isset($_SESSION['latitude']) && isset($_SESSION['longitude']) )
+            {
+               unset($_SESSION['latitude']);
+               unset($_SESSION['longitude']);
+            }   
+            */
+
+            
+
+            if(session()->has('geolocation-offline') && session()->has('geolocation-denied'))
+            {
+                session()->forget('geolocation-denied');
+                session()->forget('geolocation-offline');
+            }
+            
+            session()->flash('location-retrieved');
+
+            /*
+            if(!session()->has('geolocation-offline') && !session()->has('geolocation-denied'))
+            {
+                if(!isset($_SESSION['latitudeOffline']) && !isset($_SESSION['longitudeOffline']))
+                {
+                    
+                }
+
+            }
+            */
+
+            $this->positionFound = $positionFound;
+            $this->latitude = $latitude;
+            $this->longitude = $longitude;
+           
+            session()->forget('geolocation-denied');
+            session()->forget('geolocation-offline');
     }
 
     public function render()

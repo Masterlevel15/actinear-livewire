@@ -8,7 +8,6 @@ class Homepage extends Component
 {
     public function mount()
     {
-        session()->forget('navigation-bar-mount');
     }
     public function render()
     {
