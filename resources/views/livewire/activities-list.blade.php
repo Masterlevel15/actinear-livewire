@@ -6,7 +6,7 @@
         </a>
     </h1>
     <div class="flex items-center justify-between pr-[4.5vh] text-white pl-[3.75vh] pb-[3vh]">
-        <livewire:search-bar-component :table="'Activity'"/>
+        <livewire:search-bar-component :table="'Category'"/>
         <!-- Icône filtre -->
         <a href="{{ route('filter') }}">
             <i class="fa-solid fa-filter fa-flip-horizontal text-xl"></i>

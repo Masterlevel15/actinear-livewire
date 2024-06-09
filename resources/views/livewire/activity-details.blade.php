@@ -86,13 +86,14 @@
             <p class="text-sm text-white">Organisé par</p>
             
             <!-- Bulle avec le profil de l'organisateur -->
-            <div class="my-3 ml-2 w-14 h-14 inline-block bg-white rounded-full">
-                <img src="{{ $photoUrl }}" alt="Organisateur" class="w-full h-full rounded-full object-cover">
-            </div>
-            
-            <!-- Nom de l'organisateur -->
-            <p class="text-md text-white">{{$selectedActivity->promoter->name}}</p>
-            
+            <a href="{{ route('promoter-profile', $selectedActivity->promoter->id) }}">
+                <div class="my-3 ml-2 w-14 h-14 inline-block bg-white rounded-full">
+                    <img src="{{ $photoUrl }}" alt="Organisateur" class="w-full h-full rounded-full object-cover">
+                </div>
+                
+                <!-- Nom de l'organisateur -->
+                <p class="text-md text-white">{{$selectedActivity->promoter->name}}</p>
+            </a>
             <!-- Étoiles d'évaluation -->
             <div class="">
                 @php

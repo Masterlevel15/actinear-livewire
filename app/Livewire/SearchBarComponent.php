@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class SearchBarComponent extends Component
 {
-    public  $suggestions, $results, $table;
+    public  $suggestions, $results, $table, $placeholder;
     #[Url] 
     public $searchQuery;
     public function mount()
@@ -18,8 +18,17 @@ class SearchBarComponent extends Component
     {
         if ($this->searchQuery !== '' && strlen($this->searchQuery) >= 1) {
             $modelName = "App\\Models\\" . $this->table;
-
-            $this->suggestions = $modelName::where('title', 'like', $this->searchQuery . '%')->get();
+            if($this->table === 'Category')
+            {
+                //$this->placeholder = 'Recherche par catégorie';
+                $this->suggestions = $modelName::where('name', 'like', $this->searchQuery . '%')->get();
+            }
+            else
+            {
+                //$this->placeholder = 'Recherche par activité';
+                $this->suggestions = $modelName::where('title', 'like', $this->searchQuery . '%')->get();
+            }
+            
         } else {
             $this->suggestions = []; // Réinitialisez les suggestions si la recherche est vide ou courte.
         }
