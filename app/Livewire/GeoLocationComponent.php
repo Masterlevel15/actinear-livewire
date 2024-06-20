@@ -53,13 +53,14 @@ class GeolocationComponent extends Component
 
                 echo  $address .'/ '.$cityName;
                 //___________________________
-                
-                $result = $nominatim->geocodeQuery(GeocodeQuery::create($cityName));
 
-                if ($result->count() > 0) {
+                $result = $nominatim->geocodeQuery(GeocodeQuery::create("{$cityName}, {$countryName}"))->first(); 
+
+                if ($result) {
                     
-                    $latitude = $result->first()->getCoordinates()->getLatitude();
-                    $longitude = $result->first()->getCoordinates()->getLongitude();
+                    $latitude = $result->getCoordinates()->getLatitude();
+                    $longitude = $result->getCoordinates()->getLongitude();
+                    $postcode = $result->getPostalCode();
                     
                     $city = City::where('name', $cityName)->first();
                     if ($city) {
@@ -245,11 +246,18 @@ class GeolocationComponent extends Component
             $this->loadCount = 0;
             session(['component_load_count' => $this->loadCount]);
         }
+        
     }
 
     #[On('location-retrieved')] 
     public function locationRetrieved($latitude, $longitude, $positionFound)
     {
+        session(['geolocation-online' => [
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            ]
+        ]);
+
         if(isset($_SESSION['latitudeOffline']))
         {
                 unset($_SESSION['latitudeOffline']);

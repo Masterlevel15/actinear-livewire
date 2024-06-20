@@ -6,7 +6,7 @@
         </a>
     </h1>
     <div class="flex items-center justify-between pr-[4.5vh] text-white pl-[3.75vh] pb-[3vh]">
-        <livewire:search-bar-component :table="'Category'"/>
+        <livewire:search-bar-component :table="'Activity'"/>
         <!-- Icône filtre -->
         <a href="{{ route('filter') }}">
             <i class="fa-solid fa-filter fa-flip-horizontal text-xl"></i>
@@ -16,6 +16,7 @@
             <i class="fa-solid fa-map text-xl"></i>
         </a>
     </div>
+    <livewire:category-component />
     <!--Activités-->
     <div class="my-14 flex-col space-y-8 px-8">
     @foreach($activities as $activity)

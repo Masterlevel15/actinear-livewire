@@ -47,7 +47,7 @@ Route::get('/activities/category/{categoryId}', ActivitiesByCategory::class)->na
 Route::get('/activities/book/{userId?}', ActivitiesBook::class)->name('activities-book');
 
 //Détails activité
-Route::get('/activity-details/{id}', ActivityDetails::class)->name('activity-details');
+Route::get('/activity-details/{id}/{distance?}', ActivityDetails::class)->name('activity-details');
 
 //Profil organisateur
 Route::get('/promoter-profile/{promoterId}', PromoterProfile::class)->name('promoter-profile');
@@ -56,7 +56,7 @@ Route::get('/promoter-profile/{promoterId}', PromoterProfile::class)->name('prom
 Route::get('/promoter-profile/{promoterId}/edit', PromoterEdit::class)->name('promoter-profile-edit');
 
 //Carte
-Route::get('/map', MapComponent::class)->name('map');
+Route::get('/map/{latitude?}/{longitude?}', MapComponent::class)->name('map');
 
 //Laravel jestream vue par défaut
 Route::get('/welcome', function () {

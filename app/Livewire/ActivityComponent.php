@@ -13,11 +13,13 @@ class ActivityComponent extends Component
     #[Reactive] 
     public $latitude, $latitudeOffline;
     public $longitude, $longitudeOffline, $distance;
-    public $sortedActivities = [];
+    public $sortedActivities;
     public $activities;
     public $sortedActivitiesByDate, $sortedActivitiesByDistance, $sortedActivitiesByFilter;
     public $isByDistance = true, $isByDate = true, $isByFilter = false;
     public $online;
+    public $currentDate;
+    public $activitiesWithDistance;
 
     private function radians(float $degrees): float
     {   
@@ -29,7 +31,27 @@ class ActivityComponent extends Component
 
         return $this->distance;
     }
-    public function sortActivitiesWithDistances(float $lat, float $long)
+    public function calculateDistance()
+    {
+        $activities = $this->activities;
+        $this->activitiesWithDistance = [];
+
+        foreach($activities as $activity) {
+            $latitudeFromDB =  $activity->latitude;
+            $longitudeFromDB =  $activity->longitude;
+
+            self::distanceBetweenCoordinates(['latitude' => $this->latitude, 'longitude' => $this->longitude], ['latitude' => $latitudeFromDB,'longitude' => $longitudeFromDB]);
+
+            // Création d'un tableau avec les distances
+
+            $activity->distance = $this->distance;
+            array_push($this->activitiesWithDistance, $activity);
+        }
+        
+        session(['activitiesWithDistance' => $this->activitiesWithDistance]);
+
+    }
+    public function sortActivitiesWithDistances()
     {
         
         $distance = 300;
@@ -39,18 +61,17 @@ class ActivityComponent extends Component
         else{
             $distance = 150;
         }
+        //Gestion Date
 
-        $activities = $this->activities;
-        
+        $activities = $this->activitiesWithDistance;
+
         $activitiesSortByRange = [];
         foreach($activities as $activity) {
             $latitudeFromDB =  $activity->latitude;
             $longitudeFromDB =  $activity->longitude;
 
-            self::distanceBetweenCoordinates(['latitude' => $lat, 'longitude' => $long], ['latitude' => $latitudeFromDB,'longitude' => $longitudeFromDB]);
-
-            $activity->distance = $this->distance;
-            $activity->save();
+            
+            //$activity->save();
             if($activity->distance < $distance) {
                 array_push($activitiesSortByRange, $activity);
             }
@@ -59,27 +80,20 @@ class ActivityComponent extends Component
         $this->sortedActivities = collect($activitiesSortByRange)->sortBy('distance');
         
         //Cas Aucun résultat Activités à proximité
-        if(count($this->sortedActivities) <= 0 || $this->sortedActivitiesByDate == [])
+        if(count($this->sortedActivities) <= 0 || $this->sortedActivities== [])
         {
             session()->flash('no-results-distance', 'Aucune activité disponible à proximité, veuillez utiliser le filtre pour étendre la recherche.');
         }
         //
-
-
         return  $this->sortedActivities;  
                
     }
-
-    public function getActivitiesSortByRange()
-    {
-        return  $this->sortedActivities; 
-    }
     public function sortActivitiesByDate()
     {
-       $currentDate = Carbon::now();
-       $this->sortedActivitiesByDate = Activity::with('promoter', 'category', 'country', 'city')->whereDate('date', '>=', $currentDate)->orderBy('date', 'asc')
-        ->get();  
-
+       /*$this->sortedActivitiesByDate = Activity::with('promoter', 'category', 'country', 'city')->whereDate('date', '>=', 2023)->orderBy('date', 'asc')
+        ->get(); */
+        
+        $this->sortedActivitiesByDate = collect($this->activitiesWithDistance)->sortBy('date');
         //Cas Aucun résultat pour Prochaines activités
         if(count($this->sortedActivitiesByDate) <= 0 || $this->sortedActivitiesByDate == [])
         {
@@ -90,26 +104,24 @@ class ActivityComponent extends Component
 
     public function mount()
     {
-        //dd($this->latitudeOffline, $this->latitude);
-        $this->activities = Activity::with('promoter', 'category', 'country', 'city')->whereYear('date', '>=', 2023)
+        $this->currentDate = Carbon::now();
+        $this->activities = Activity::with('promoter', 'category', 'country', 'city')->whereDate('date', '>=', $this->currentDate)
             ->get();
 
         if(!Session::has('filter-active'))
         {
-            $this->sortActivitiesByDate();
-      
             //$this->latitude = $_SESSION['latitude'];
             //$this->longitude = $_SESSION['longitude'];
-
+            $this->calculateDistance();
                     
-            $this->sortActivitiesWithDistances(floatval($this->latitude ), floatval($this->longitude));
-            //dd('activityComponent',$this->sortedActivities);
-            
+            $this->sortActivitiesWithDistances();
+
+            $this->sortActivitiesByDate();
         }  
 
 
             if(Session::has('filter-active')){
-                //dd('filter-active');
+            
                 if(Session::has('setting-distance'))
                 {
                     $this->sortedActivities = Session::get('setting-distance');
@@ -123,16 +135,15 @@ class ActivityComponent extends Component
                         session()->flash('no-results-distance', 'Aucune activité disponible à proximité, veuillez utiliser le filtre pour étendre la recherche.');
                     }
                 }
-
-                //dd(Session::get('setting-distance'), Session::get('setting-date'));
                 
                 if(Session::has('setting-date'))
                 {
+                    
                     $this->sortedActivitiesByDate = Session::get('setting-date');
                     $this->isByDate = true;
                     $this->isByDistance = false;
                     $this->isByFilter = false;
-
+                    
                     //Si aucun résultat (tableau vide)
                     if(count($this->sortedActivitiesByDate) <= 0 || $this->sortedActivitiesByDate == [])
                     {
@@ -159,7 +170,7 @@ class ActivityComponent extends Component
                 {
                     $this->isByDistance = true;
                     $this->isByDate = true;
-                }
+                } 
             }  
         
     }

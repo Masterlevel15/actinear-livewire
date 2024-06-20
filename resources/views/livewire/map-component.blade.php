@@ -11,7 +11,7 @@
              
              {{$distance}} KM
             </div>
-            <input type="range" id="distance-slider" min="0" max="1000" class="w-48" 
+            <input type="range" id="distance-slider" min="0" max="7000" class="w-48" 
             value='{{$distance}}' 
             wire:model="sliderValue" wire:change="handleInputChange">
         </div>
@@ -166,6 +166,19 @@ document.addEventListener('livewire:initialized', () => {
   let locationRetrieved = Boolean;
   const hasGeolocationOffline = @json(session()->has('geolocation-offline'));
   const hasGeolocationDenied = @json(session()->has('geolocation-denied'));
+  const hasActivitiesByCategory= @json(session()->has('ActivitiesByCategory'));
+  
+  if(Array.isArray(event))
+  {
+    var activities = JSON.parse(document.getElementById("map-component").dataset.activities);
+  }
+  else
+  {
+    var activities = Object.entries(JSON.parse(document.getElementById("map-component").dataset.activities)).map(([id, details]) => ({
+            id: parseInt(id),
+            ...details
+        }));
+  }
 
   if(hasGeolocationOffline && hasGeolocationDenied)
   {
@@ -173,25 +186,44 @@ document.addEventListener('livewire:initialized', () => {
     longitude = @json($longitude);
     locationRetrieved = true;
   }
-
+  //console.log(@json($latitude));
+  //console.log(@json($longitude));
   @this.on('sendActivities', (event) => {
-    var newActivities = event[0].activities;
-
+      var newActivities = Object.entries(event[0].activities).map(([id, details]) => ({
+        id: parseInt(id),
+        ...details
+      }));
+    
     updateMapWithActivities(newActivities);
     addDistanceRange();
   });
+  /*
+  @this.on('sendActivities', (event) => {
+    var newActivities = event[0].activities;
+    updateMapWithActivities(newActivities);
+    addDistanceRange();
+  });
+  */
+
+  
 
   // Code pour initialiser la carte ici...
   if ("geolocation" in navigator && !hasGeolocationDenied) {
     
     const loader = document.querySelector('#loader');
-    
     // Obtenez la position de l'utilisateur
     navigator.geolocation.getCurrentPosition(function(position) {
         // Les coordonnées de latitude et de longitude sont disponibles dans position.coords
          latitude = position.coords.latitude;
          longitude = position.coords.longitude;
-
+        
+        //Envoi coords vers serveurs
+        /*
+        @this.dispatch('coords-retrieved', { 
+                            latitude: position.coords.latitude, 
+                            longitude: position.coords.longitude,
+                        });
+        */
         // Utilisez les coordonnées comme vous le souhaitez (par exemple, affichage sur une carte)
         map = L.map('map').setView([latitude, longitude], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -200,14 +232,15 @@ document.addEventListener('livewire:initialized', () => {
 
 
         loader.classList.add('hidden');
-
+        
         // Reste du code d'initialisation de la carte...
-
+        //console.log(document.getElementById("map-component").dataset);
+        
         // Appel initial pour afficher les marqueurs des activités
-        var activities = JSON.parse(document.getElementById("map-component").dataset.activities);
-
+        //var activities = JSON.parse(document.getElementById("map-component").dataset.activities);
         updateMapWithActivities(activities);
         addDistanceRange();
+        
       });
   } else {
     console.log("La géolocalisation n'est pas prise en charge par ce navigateur.");
@@ -222,10 +255,8 @@ document.addEventListener('livewire:initialized', () => {
         loader.classList.add('hidden');
 
         // Reste du code d'initialisation de la carte...
-
         // Appel initial pour afficher les marqueurs des activités
-        var activities = JSON.parse(document.getElementById("map-component").dataset.activities);
-
+        //var activities = JSON.parse(document.getElementById("map-component").dataset.activities);
         updateMapWithActivities(activities);
         addDistanceRange();
     }
@@ -233,10 +264,11 @@ document.addEventListener('livewire:initialized', () => {
 
   function updateMapWithActivities(activities) {
     // Supprimez les anciens marqueurs de la carte
+    
     markers.forEach((marker) => {
       map.removeLayer(marker);
     });
-
+    
     markers = []; // Réinitialisez le tableau de marqueurs
 
     // Ajoutez les nouveaux marqueurs à la carte

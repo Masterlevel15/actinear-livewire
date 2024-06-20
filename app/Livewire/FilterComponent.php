@@ -44,6 +44,7 @@ class FilterComponent extends Component
 
     public function mount()
     {
+        
         $this->getCities();
         $this->categories = Category::all();
        
@@ -122,13 +123,16 @@ class FilterComponent extends Component
     {
         $this->cities = City::all();
     }
+    /*
     public function applyFilters()
     {
+        dd(session('activitiesWithDistance'));
         $this->dispatch('filter-apply', true);
-
+        
         session()->flush();
         session()->flash('filter-active', true);
-        $query = Activity::query(); // Commencez avec une requête de base
+        //$query = Activity::query(); // Commencez avec une requête de base
+        $query = session('activitiesWithDistance');
         
         // Filtre par ville
         if ($this->searchQueryResult) {
@@ -157,18 +161,15 @@ class FilterComponent extends Component
 
         // Tri par date
         if (in_array(2, $this->selectedSettingsId)) {
+            dd('test');
             $this->resultsByDate = $query
-                ->with('promoter', 'category', 'country', 'city')
-                ->orderBy('date', 'desc') // Remplacez 'date' par le nom de votre colonne
-                ->get();
+                ->sortBy('date');
             session()->flash('setting-date', $this->resultsByDate);
         }
         // Tri par distance
         if (in_array(1, $this->selectedSettingsId)) {
             $this->resultsByDistance = $queryForDistance
-                ->with('promoter', 'category', 'country', 'city')
-                ->orderBy('distance', 'asc') // Remplacez 'distance' par votre colonne de distance réelle
-                ->get();
+            ->sortBy('distance');
             session()->flash('setting-distance', $this->resultsByDistance); 
         }
 
@@ -179,6 +180,62 @@ class FilterComponent extends Component
         // Obtenez les résultats finaux
         
     }
+*/
+
+    public function applyFilters()
+    {
+    
+    $this->dispatch('filter-apply', true);
+    $activitiesWithDistance = collect(session('activitiesWithDistance'));
+    //session()->flush();
+    session()->flash('filter-active', true);
+
+    // Remplacez la requête initiale par la collection stockée en session
+
+    // Filtre par ville
+    if ($this->searchQueryResult) {
+        $activitiesWithDistance = $activitiesWithDistance->where('city_id', $this->searchQueryResult['id']);
+    }
+
+    // Filtre par distance en utilisant le sliderValue
+    if ($this->sliderValue) {
+        $activitiesWithDistance = $activitiesWithDistance->where('distance', '<=', $this->sliderValue);
+    
+    }
+
+    // Filtre par catégories
+    if (!empty($this->selectedCategories)) {
+        $activitiesWithDistance = $activitiesWithDistance->whereIn('category_id', $this->selectedCategories);
+    }
+
+    // Initialisation des résultats
+    $this->resultsByDate = collect();
+    $this->resultsByDistance = collect();
+
+
+    // Stocker les résultats filtrés dans la session
+    session()->flash('filter', $activitiesWithDistance);
+
+    // Clonez la collection filtrée pour le tri par distance
+    $activitiesForDistance = clone $activitiesWithDistance;
+
+    // Tri par date
+    if (in_array(2, $this->selectedSettingsId)) {
+        $this->resultsByDate = $activitiesWithDistance
+            ->sortBy('date');
+        session()->flash('setting-date', $this->resultsByDate);
+    }
+
+    // Tri par distance
+    if (in_array(1, $this->selectedSettingsId)) {
+        $this->resultsByDistance = $activitiesForDistance
+            ->sortBy('distance');
+        session()->flash('setting-distance', $this->resultsByDistance);
+    }
+}
+
+
+
     public function sendResult()
     {
         $this->applyFilters();

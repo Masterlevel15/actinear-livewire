@@ -28,6 +28,7 @@ class ActivityForm extends Component
         $this->date = now()->format('Y-m-d');
         $this->categories = Category::all();
     }
+    
     public function updatedPhoto()
     {
         if ($this->photo->isValid()) {
@@ -62,7 +63,7 @@ class ActivityForm extends Component
             $this->selectedCategory[] = $categoryId;
         }
     }
-    public function getCoordinates($city)
+    public function getCoordinates($address)
     {
         
         $httpClient = new GuzzleClient();
@@ -71,16 +72,17 @@ class ActivityForm extends Component
         $nominatim = new Nominatim($httpClient, 'https://nominatim.openstreetmap.org', $userAgent);
 
         try {
-            $result = $nominatim->geocodeQuery(GeocodeQuery::create($city));
-            if ($result->count() > 0) {
-                
-                $this->latitude = $result->first()->getCoordinates()->getLatitude();
-                $this->longitude = $result->first()->getCoordinates()->getLongitude();
+            $result = $nominatim->geocodeQuery(GeocodeQuery::create($address))->first();
+            
+            if ($result) {
+                $this->latitude = $result->getCoordinates()->getLatitude();
+                $this->longitude = $result->getCoordinates()->getLongitude();
                 $this->resetErrorBag();
-                $this->zipCode = $result->first()->getPostalCode();
+                $this->zipCode = $result->getPostalCode();
+
             } else {
                 // Ville non trouvée, définir un message d'erreur et ne pas continuer
-                $this->addError('city', 'La ville introduite n\'est pas valide.');
+                $this->addError('city', 'L\'adresse introduite n\'est pas valide.');
             }
         } catch (\Exception $e) {
             // Gérer l'exception ici, si nécessaire
@@ -88,6 +90,7 @@ class ActivityForm extends Component
         }
 
     }
+
     public function save()
     {
         $this->validate([
@@ -99,23 +102,25 @@ class ActivityForm extends Component
             'photo' => 'max:1024', // 1MB Max
             'selectedCategory' => 'required',
         ]);
-        /*
-        $this->validate([
-            'title' => 'required|string|max:255',
-            'date' => 'required|date_format:"Y.m.j H:i:s"',
-            'term' => 'required', // Validez ceci en fonction de vos exigences
-            'participants_number' => 'required|numeric|min:1',
-            'address' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'country' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'photo' => 'image|max:1024', // 1MB Max
-        ]);
-        */
+        
+        // Diviser l'adresse en un tableau de mots
+        $array = explode(' ', $this->address);
 
-        if($this->city)
+        // Extraire le numéro de rue (dernier élément du tableau)
+        $streetNumber = $array[count($array) - 1];
+
+        // Extraire le nom de la rue (tous les éléments sauf le dernier)
+        $street = array_slice($array, 0, count($array) - 1);
+            
+        // Recomposer le nom de la rue en une chaîne de caractères
+        $streetName = implode(' ', $street);
+
+        // Composer l'adresse complète
+        $fullAddress = $streetNumber . ' ' . $streetName . ', ' . $this->city . ', ' . $this->country;
+
+        if($fullAddress)
         {
-            $this->getCoordinates($this->city);
+            $this->getCoordinates($fullAddress);
         }
 
         $dateTime = $this->date . ' ' . $this->hour;
@@ -201,6 +206,7 @@ class ActivityForm extends Component
 
         $this->redirect('/');
     }
+
     public function render()
     {
         return view('livewire.activity-form');

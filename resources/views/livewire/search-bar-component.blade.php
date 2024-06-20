@@ -1,6 +1,8 @@
 <!-- Champ de recherche -->
 <div class="bg-[#CEE6E7] p-0 rounded-[1.5vh] flex items-center relative">
-    <input type="text" placeholder="Recherche par catégorie"
+    <!-- Icône loupe -->
+    <i class="fa fa-search ml-4 text-slate-600"></i>
+    <input type="text" placeholder="Recherche par activité..."
         id="searchBar" class="bg-transparent border-none focus:outline-none flex-grow ml-2" wire:model.live="searchQuery" wire:keydown="searchResult">
         
         @if (collect($suggestions)->isNotEmpty())

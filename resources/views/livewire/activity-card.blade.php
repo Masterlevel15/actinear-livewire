@@ -30,7 +30,7 @@
       <!-- Lieu et distance -->
       <div class="flex items-center mt-2 text-green2">
         <i class="fa-solid fa-map-marker-alt"></i>
-        <span class="ml-1">{{ $activity->city->name }}, {{ number_format($activity->distance, 0); }} km</span>
+        <span class="ml-1">{{ $activity->city->name }}, {{ number_format($activity->distance, 0); }} km {{$distance}}</span>
       </div>
       <!-- Utilisateur et notation -->
       <a href="{{ route('promoter-profile', $activity->promoter->id) }}">
@@ -63,7 +63,7 @@
     </div>
     <!-- Bouton "Info" -->
     <div class="text-center mb-[4vh] mt-2">
-      <a href="{{ route('activity-details', ['id' => $activity->id] ) }}" class="bg-green rounded-full px-8 py-2 text-slate-50" wire:navigate>Infos</a>
+      <a href="{{ route('activity-details', ['id' => $activity->id, 'distance' => $distance] ) }}" class="bg-green rounded-full px-8 py-2 text-slate-50" wire:navigate>Infos</a>
     </div>
 
 </div>

@@ -8,6 +8,7 @@
     </div>
     -->
     @if(($positionFound || Session::has('filter-active')) && !Session::has('loading-active'))
+        <livewire:header :latitude="$latitude" :longitude="$longitude"/>
         <livewire:activity-component :latitude="$latitude" :longitude="$longitude" wire:ignore/>
     @elseif(Session::has('geolocation-denied') && !Session::has('geolocation-offline') )
         <livewire:geolocation-offline /> 

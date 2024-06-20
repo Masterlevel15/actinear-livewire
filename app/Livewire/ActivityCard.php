@@ -6,7 +6,7 @@ use Livewire\Component;
 
 class ActivityCard extends Component
 {
-    public $activity, $activities, $imageUrl;
+    public $activity, $activities, $imageUrl, $distance;
 
     public function mount()
     {
